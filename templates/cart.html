@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-center text-3xl font-bold mb-8">Shopping Cart</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Loop through items in the cart -->
+      {% for item in cart_items %}
+      <div class="item border p-4">
+        <h2 class="text-lg font-semibold">{{ item.name }}</h2>
+        <p>Price: {{ item.price }}</p>
+        <p>Quantity: {{ item.quantity }}</p>
+        <p>Total: {{ item.price * item.quantity }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <!-- Display total price -->
+    <div class="text-right mt-4">
+      <!-- <p class="text-xl font-semibold">Total Price: {{ total_price }}</p> -->
+    </div>
+    <!-- Checkout button -->
+    <div class="text-center mt-8">
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Checkout</button>
+    </div>
+  </div>
+</body>
+</html>

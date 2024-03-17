@@ -15,20 +15,6 @@ git pull
 
 git merge <branch-name>
 
-//
-SGPA = Σ (Ci×GPi)/ΣCi
-
-Where Ci is the credit of all subjects for a course
-
-GPi is the grade point for that course.
-
-CGPA = Σ (Ci×GPi)/ΣCi
-
-Where Ci is the credit of all subjects for a course
-
-GPi is the grade point for that course.
-
-(CGPA of the higher semester is average of scored SGPA up to that semester)
 
 
 
