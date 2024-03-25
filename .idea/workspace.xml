@@ -5,19 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a9ee5618-3e20-436f-937d-fcccbbd705ef" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/instance/canteen.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/appam.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/avial.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/biriyani.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/fishcurry.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/idiyappam.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/porotta.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/puttu.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/sadya.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/canteen.db" beforeDir="false" afterPath="$PROJECT_DIR$/canteen.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/appam.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/appam.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/avial.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/avial.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/biriyani.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/biriyani.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/fishcurry.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/fishcurry.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/idiyappam.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/idiyappam.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/porotta.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/porotta.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/puttu.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/puttu.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/sadya.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/sadya.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/cart.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/workarea.py" beforeDir="false" afterPath="$PROJECT_DIR$/workarea.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

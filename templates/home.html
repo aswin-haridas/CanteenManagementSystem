@@ -1,71 +1,50 @@
+<!-- home.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="p-4">
-  <h1 class="text-3xl font-bold text-center mb-8">Welcome to the Canteen</h1>
-  <div class="grid grid-cols-1 xl:grid-cols-5 gap-9 px-4 py-4 ">
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-  <div class="w-32 h-24 bg-gray-300 rounded-xl"></div>
-</div>
+<body>
+    <nav class="bg-gray-800 py-4">
+        <div class="max-w-full mx-auto px-28 flex justify-between items-center">
+            <div class="flex-shrink-0">
+                <a href="#" class="text-white font-bold text-lg pl-0">Home</a>
+            </div>
+            <div class="flex-grow text-center">
+                <a href="#" class="text-white font-bold text-lg">Profile</a>
+            </div>
+            <div class="flex-grow text-center">
+                <span class="text-white font-bold text-lg">T H E T A</span>
+            </div>
+            <div class="flex-shrink-0">
+                <a href="{{ url_for('view_cart') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">View Cart</a>
+            </div>
+        </div>
+    </nav>
 
-
-
-apply this grid style to this layout
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="p-4">
-  <h1 class="text-3xl font-bold text-center mb-8">Welcome to the Canteen</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {% for item in menu_items %}
-      <div class="item bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-        <img class="w-24 h-24 mb-2 mx-auto" src="{{ item.image_url }}" alt="{{ item.name }} Image"> <h3 class="text-lg font-medium mb-2">{{ item.id }}</h3>
-        <h3 class="text-xl font-bold mb-2">{{ item.name }}</h3>
-        <p class="text-gray-700">Price: {{ item.price }}</p>
-        <form class="flex justify-center mt-4" action="{{ url_for('add_to_cart', item_id=item.id) }}" method="post">
-          <input type="hidden" name="item_id" value="{{ item.id }}">
-          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add to Cart</button>
-        </form>
-      </div>
-    {% endfor %}
-  </div>
-  <a href="{{ url_for('view_cart') }}" class="text-blue-500 hover:text-blue-700 underline">View Cart</a>
-</body>
-</html>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {% for item in menu_items %}
-      <div class="item bg-white rounded-xl shadow-md p-4 flex flex-col items-center">
-        <img class="w-24 h-24 mb-2 mx-auto" src="{{ item.image_url }}" alt="{{ item.name }} Image"> <h3 class="text-lg font-medium mb-2">{{ item.id }}</h3>
-        <h3 class="text-xl font-bold mb-2">{{ item.name }}</h3>
-        <p class="text-gray-700">Price: {{ item.price }}</p>
-        <form class="flex justify-center mt-4" action="{{ url_for('add_to_cart', item_id=item.id) }}" method="post">
-          <input type="hidden" name="item_id" value="{{ item.id }}">
-          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add to Cart</button>
-        </form>
-      </div>
-    {% endfor %}
-  </div>
-  <a href="{{ url_for('view_cart') }}" class="text-blue-500 hover:text-blue-700 underline">View Cart</a>
+    <div class="px-28 py-12">
+        <h1 class="text-3xl font-bold text-left mb-8">Welcome to the Canteen</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+            {% for item in menu_items %}
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="relative overflow-hidden">
+                    <img class="object-cover h-48 w-full" src="{{ item.image_url }}" alt="{{ item.name }} Image">
+                </div>
+                <div class="px-6 py-4">
+                    <h3 class="text-xl font-bold mb-2">{{ item.name }}</h3>
+                    <p class="text-gray-700">Price: {{ item.price }}</p>
+                </div>
+                <div class="px-6 pt-4 pb-2">
+                    <form action="{{ url_for('add_to_cart', item_id=item.id) }}" method="post">
+                        <button type="submit" class="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>

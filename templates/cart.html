@@ -1,27 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Meta tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cart</title>
+  
+  <!-- CSS styles -->
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body>
+  <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.2.0/uicons-regular-straight/css/uicons-regular-straight.css'>
+  <style>
+    /* Custom styles */
+    .overlay {
+      /* Overlay styles */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+      z-index: 9999;
+      display: none; /* Initially hidden */
+      justify-content: center;
+      align-items: center;
+    }
 
+    .modal {
+      /* Modal styles */
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body class="px-40 py-8">  
+  <!-- Cart title -->
   <h1 class="text-3xl font-bold text-center mb-8">Your Cart</h1>
-  <ul class="cart list-none p-0">
+  
+  <!-- Cart items list -->
+  <ul class="cart list-none ">  
     {% for item in cart_items %}
       <li class="item flex items-center justify-between py-4 border-b border-gray-200">
-        <div class="flex items-center">
+        <div class="flex items-center px-4">  
           <h3 class="text-lg font-medium mr-4">{{ item.name }}</h3>
           <p class="text-gray-700">Price: {{ item.price }}</p>
         </div>
         <div class="flex items-center">
+          <!-- Quantity input field -->
           <input type="number" min="1" value="{{ item.quantity }}" class="w-10 text-center border border-gray-300 rounded px-2 py-1 focus:outline-none" name="quantity[{{ item.id }}]">
+          <!-- Form to remove item from cart -->
+          <form action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="post">
+            <button type="submit"><i class="fi fi-rs-trash pl-4"></i></button>
+          </form>
         </div>
       </li>
-    {% endfor %} </ul>
-  <a href="#" class="text-white bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded block mx-auto mt-8">Checkout</a>
-  <a href="{{ url_for('home') }}" class="text-blue-500 hover:text-blue-700 underline block text-center mt-8">Back to Menu</a>
+    {% endfor %}
+  </ul>
+  
+  <!-- Checkout and Back to Menu buttons -->
+  <a href="#" id="checkoutBtn" class="text-white bg-green-500 hover:bg-green-700 font-bold py-2 px-4 rounded block mx-auto mt-8">Checkout</a>
+  <a href="{{ url_for('home') }}" class="text-green-500 hover:text-blue-700 block text-center mt-8">Back to Menu</a>
+
+  <!-- Overlay and Modal for processing -->
+  <div id="overlay" class="overlay">
+    <div class="modal">
+      <p>Processing...</p>
+    </div>
+  </div>
+
+  <!-- JavaScript for checkout button -->
+  <script>
+    document.getElementById('checkoutBtn').addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent default link behavior
+      document.getElementById('overlay').style.display = 'flex'; // Show overlay
+      
+      // Set timeout to redirect after 5 seconds
+      setTimeout(function() {
+        window.location.href = "{{ url_for('checkout') }}";
+      }, 5000); // 5000 milliseconds = 5 seconds
+    });
+  </script>
 </body>
 </html>
