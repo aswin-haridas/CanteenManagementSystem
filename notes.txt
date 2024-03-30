@@ -18,4 +18,12 @@ git merge <branch-name>
 
 
 
+profile:
+name
+id card
+role ; admin , user , canteen manager ,
+score 100
 
+delete cart
+
+alingment 

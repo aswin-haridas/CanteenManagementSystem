@@ -1,50 +1,118 @@
 <!-- home.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E D E R E</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet" />
+    <link rel="stylesheet"
+        href="https://cdn-uicons.flaticon.com/2.2.0/uicons-regular-straight/css/uicons-regular-straight.css" />
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            background-color: #ffffff;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+    </style>
 </head>
-<body>
-    <nav class="bg-gray-800 py-4">
-        <div class="max-w-full mx-auto px-28 flex justify-evenly items-center">
-            <div class="flex-shrink-0">
-                <a href="#" class="text-white font-bold text-lg pl-0">Home</a>
+
+<body class="flex flex-col">
+    <nav class="bg-white py-4 shadow-md">
+        <div class="max-w mx-auto px-5 flex justify-between items-center">
+            <div class="text-center flex-grow">
+                <span class="logo">E D E R E</span>
             </div>
-            <div class="flex-grow text-center">
-                <a href="#" class="text-white font-bold text-lg">Profile</a>
-            </div>
-            <div class="flex-grow text-center">
-                <span class="text-white font-bold text-lg">E D E R E</span>
-            </div>
-            <div class="flex-shrink-0">
-                <a href="{{ url_for('view_cart') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">View Cart</a>
+            <div class="flex space-x-4 ml-auto items-end">
+                <a href="{{ url_for('home') }}" class="text-gray-800 font-semibold text-lg">Home</a>
+                <a href="#" class="text-gray-800 font-semibold text-lg">Profile</a>
             </div>
         </div>
     </nav>
-
-    <div class="px-28 py-12">
-        <h1 class="text-3xl font-bold text-left mb-8">Welcome to the Canteen</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-            {% for item in menu_items %}
-            <div class="bg-white rounded-lg shadow-md">
-                <div class="relative overflow-hidden">
-                    <img class="object-cover h-48 w-full" src="{{ item.image_url }}" alt="{{ item.name }} Image">
-                </div>
-                <div class="px-6 py-4">
-                    <h3 class="text-xl font-bold mb-2">{{ item.name }}</h3>
-                    <p class="text-gray-700">Price: {{ item.price }}</p>
-                </div>
-                <div class="px-6 pt-4 pb-2">
-                    <form action="{{ url_for('add_to_cart', item_id=item.id) }}" method="post">
-                        <button type="submit" class="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add to Cart</button>
-                    </form>
+    <div class="flex flex-row mt-8">
+        <section class="w-3/4 p-8 bg-white shadow-md mx-auto rounded-lg">
+            <h1 class="text-4xl font-bold text-center mb-8">
+                Welcome to the Canteen
+            </h1>
+            <div class="container mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                    {% for item in menu_items %}
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <img class="w-full h-32 object-cover" src="{{ item.image_url }}" alt="{{ item.name }} Image" />
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold mb-2">{{ item.name }}</h3>
+                            <p class="text-gray-600 mb-3">Price: {{ item.price }}</p>
+                            <form action="{{ url_for('add_to_cart', item_id=item.id) }}" method="post">
+                                <button type="submit"
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
+                                    Add to Cart
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
-        </div>
+        </section>
+        <aside class="w-1/4 bg-white shadow-md p-8 mx-auto rounded-lg">
+            <h1 class="text-3xl font-bold text-center mb-8">Your Cart</h1>
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Item Name</th>
+                        <th class="text-left">Quantity</th>
+                        <th class="text-left">Price</th>
+                        <th class="text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr class="border-b border-gray-200 py-2">
+                        <td class="font-semibold">{{ item.name }}</td>
+                        <td class="text-blue-500">{{ item.quantity }}</td>
+                        <td class="text-green-500">{{ item.price }}</td>
+                        <td>
+                            <form action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="post">
+                                <button type="submit"
+                                    class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-1 px-3 rounded">
+                                    <i class="fi fi-rs-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-gray-500 py-2">
+                            Your cart is empty.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="border-t border-gray-200 py-2">
+                        <td colspan="2" class="font-bold text-xl">Total</td>
+                        <td colspan="2" class="text-green-500 font-bold text-xl">{{ total_price }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="mt-4">
+                <form action="{{ url_for('checkout') }}" method="get">
+                    <button type="submit"
+                        class="bg-black hover:bg-gray-700 text-white font-bold py-3 px-6 rounded block mx-auto">
+                        Checkout
+                    </button>
+                </form>
+            </div>
+        </aside>
     </div>
 </body>
 </html>
