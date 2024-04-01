@@ -35,11 +35,11 @@
                 <span class="logo">E D E R E</span>
             </div>
             <div class="flex space-x-4 ml-auto items-end">
-                <a href="{{ url_for('home') }}" class="text-gray-800 font-semibold text-lg">Home</a>
-                <a href="#" class="text-gray-800 font-semibold text-lg">Profile</a>
+                <a href="{{ url_for('login') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login</a>
             </div>
         </div>
     </nav>
+
     <div class="flex flex-row mt-8">
         <section class="w-3/4 p-8 bg-white shadow-md mx-auto rounded-lg">
             <h1 class="text-4xl font-bold text-center mb-8">
@@ -54,10 +54,12 @@
                             <h3 class="text-xl font-semibold mb-2">{{ item.name }}</h3>
                             <p class="text-gray-600 mb-3">Price: {{ item.price }}</p>
                             <form action="{{ url_for('add_to_cart', item_id=item.id) }}" method="post">
+                                
                                 <button type="submit"
                                     class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
                                     Add to Cart
                                 </button>
+                                
                             </form>
                         </div>
                     </div>
