@@ -67,7 +67,10 @@ def login():
             session["name"] = name
 
             if user_type_form == user_type:
-                return redirect(url_for("home"))
+                if user_type == 'admin':
+                    return redirect(url_for("user_management"))
+                else:
+                    return redirect(url_for("home"))
         error_message = "Invalid username or password"
         return render_template("error.html", error=error_message)
 
