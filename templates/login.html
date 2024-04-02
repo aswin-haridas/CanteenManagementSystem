@@ -1,43 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
-          <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to your account</h2>
-        </div>
-      
-        <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form class="space-y-6" action="#" method="POST">
-            <div>
-              <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
-              <div class="mt-2">
-                <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-              </div>
-            </div>
-      
-            <div>
-              <div class="flex items-center justify-between">
-                <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
-                <div class="text-sm">
-                  <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
-                </div>
-              </div>
-              <div class="mt-2">
-                <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-              </div>
-            </div>
-      
-            <div>
-              <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
-            </div>
-          </form>
-        </div>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    body {
+  margin:0;
+  padding:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-family:"Poppins",sans-serif
+  }
+  
+  .login-box {
+  width:400px;
+  padding:40px;
+  text-align:center
+  }
+  
+  p {
+  font-weight:600;
+  font-size:22px;
+  margin-right:15px
+  }
+  
+  input[type="text"],input[type="password"] {
+  padding:10px;
+  margin-bottom:20px;
+  width:100%;
+  border:2px solid #000;
+  border-radius:4px;
+  font-size:16px;
+  font-family:"Poppins",sans-serif;
+  box-sizing:border-box
+  }
+  
+  input[type="submit"] {
+  background-color:#000;
+  color:#fff;
+  padding:10px 20px;
+  border:none;
+  border-radius:4px;
+  font-size:16px;
+  font-family:"Poppins",sans-serif;
+  cursor:pointer
+  }
+  
+  .select {
+  padding:10px;
+  margin-bottom:20px;
+  width:100%;
+  border:2px solid #000;
+  border-radius:4px;
+  font-size:16px;
+  box-sizing:border-box
+  }
+  
+  #user-image {
+  height:50px;
+  width:50px
+  }
+  </style>
+  <body>
+    <div class="login-box">
+      <div style="padding-bottom: 28px; display: flex; align-items: center; justify-content: center;">
+        <p>Login as</p>
+        <img id="user-image" src="{{customer}}" alt="Student Image" />
       </div>
-</body>
+      <form method="POST">
+        <select
+          name="user-type"
+          class="select"
+          onchange="updateImage(this.value)"
+        >
+          <option value="customer">Customer</option>
+          <option value="manager">Canteen Manager</option>
+          <option value="admin">Admin</option>
+        </select>
+        <input type="text" name="username" placeholder="Username" required />
+        <br />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <br />
+        <input type="submit" value="Login" />
+      </form>
+    </div>
+    <script>
+      function updateImage(userType) {
+        const image = document.getElementById("user-image");
+        if (userType === "customer") {
+          image.src = "{{customer}}";
+        } else if (userType === "manager") {
+          image.src = "{{manager}}";
+        } else if (userType === "admin") {
+          image.src = "{{admin}}";
+        } else {
+          image.src = "../images/placeholder.png";
+        }
+      }
+    </script>
+    
+  </body>
 </html>
