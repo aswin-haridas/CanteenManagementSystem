@@ -151,27 +151,27 @@ def profile():
 
     return "User not found"
 
-@app.route('/add_to_cart/<int:item_id>', methods=['POST'])
-def add_to_cart(item_id):
+@app.route('/add_to_cart/<int:id>', methods=['POST'])
+def add_to_cart(id):
     if request.method == 'POST':
         current_user = session.get('user_id')  
         conn = get_db_connection()
-        existing_item = conn.execute('SELECT * FROM Cart WHERE item_id = ? AND user_id = ?', (item_id, current_user)).fetchone()
+        existing_item = conn.execute('SELECT * FROM Cart WHERE id = ? AND user_id = ?', (id, current_user)).fetchone()
         if existing_item:
             new_quantity = existing_item['quantity'] + 1
             conn.execute('UPDATE Cart SET quantity = ? WHERE id = ?', (new_quantity, existing_item['id']))
         else:
-            conn.execute('INSERT INTO Cart (item_id, quantity, user_id) VALUES (?, ?, ?)', (item_id, 1, current_user))
+            conn.execute('INSERT INTO Cart (id, quantity, user_id) VALUES (?, ?, ?)', (id, 1, current_user))
         conn.commit()
         conn.close()
     return redirect(url_for('home'))
 
-@app.route('/remove_from_cart/<int:item_id>', methods=['POST'])
-def remove_from_cart(item_id):
+@app.route('/remove_from_cart/<int:id>', methods=['POST'])
+def remove_from_cart(id):
     if request.method == 'POST':
         current_user = session.get('user_id')  
         conn = get_db_connection()
-        conn.execute('DELETE FROM Cart WHERE item_id = ? AND user_id = ?', (item_id, current_user))
+        conn.execute('DELETE FROM Cart WHERE id = ? AND user_id = ?', (id, current_user))
         conn.commit()
         conn.close()
     return redirect(url_for('home'))
