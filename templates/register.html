@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .register-box {
+      width: 400px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    p {
+      font-weight: 600;
+      font-size: 22px;
+      margin-right: 15px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      padding: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      border: 2px solid #000;
+      border-radius: 4px;
+      font-size: 16px;
+      font-family: "Poppins", sans-serif;
+      box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+      background-color: #000;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-family: "Poppins", sans-serif;
+      cursor: pointer;
+    }
+
+    .select {
+      padding: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      border: 2px solid #000;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    #user-image {
+      height: 50px;
+      width: 50px;
+    }
+  </style>
+  <body>
+    <div class="register-box">
+      <div
+        style="
+          padding-bottom: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <p>Register as</p>
+        <img id="user-image" src="{{customer}}" alt="Student Image" />
+      </div>
+      <form method="POST" action="/register">
+        <select
+          name="user-type"
+          class="select"
+          onchange="updateImage(this.value)"
+        >
+          <option value="customer">Customer</option>
+          <option value="manager">Canteen Manager</option>
+          <option value="admin">Admin</option>
+        </select>
+        <input type="text" name="username" placeholder="Username" required />
+        <br />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <br />
+        <input type="submit" value="Register" />
+      </form>
+    </div>
+    <script>
+      function updateImage(userType) {
+        const image = document.getElementById("user-image");
+        if (userType === "customer") {
+          image.src = "{{customer}}";
+        } else if (userType === "manager") {
+          image.src = "{{manager}}";
+        } else if (userType === "admin") {
+          image.src = "{{admin}}";
+        } else {
+          image.src = "../images/placeholder.png";
+        }
+      }
+    </script>
+  </body>
+</html>

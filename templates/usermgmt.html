@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>StudentSpace</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-100 font-sans p-4"> <!-- Added padding to the body -->
+  <div class="StudentSpace">
+    <div class="main-section">
+
+      <!-- remind -->
+      <div id="popup" class="popup">
+        <form class="userform">
+          <label for="text" class="text-lg font-bold text-gray-800">Editing for {{username}}</label>
+          <br><br>
+          <label for="username" class="text-sm text-gray-700">Username:</label>
+          <input type="text" id="username" name="username" class="border border-gray-300 rounded-md p-2" />
+          <br><br>
+          <label for="password" class="text-sm text-gray-700">Password:</label>
+          <input type="password" id="password" name="password" class="border border-gray-300 rounded-md p-2" />
+          <br><br>
+          <label for="role" class="text-sm text-gray-700">User Type:</label>
+          <select id="role" name="role" class="border border-gray-300 rounded-md p-2">
+            <option value="admin">Admin</option>
+            <option value="faculty">Manager</option>
+            <option value="student">Customer</option>
+          </select>
+          <label for="score" class="text-sm text-gray-700">Score:</label>
+          <input type="number" id="score" name="score" class="border border-gray-300 rounded-md p-2" />
+          <div class="button-container">
+            <button type="button" id="cancelButton" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
+            <button type="button" id="okButton" class="bg-green-500 text-white px-4 py-2 rounded">OK</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="main">
+        <table class="w-full bg-white shadow-md rounded-lg">
+          <thead>
+            <tr>
+              <th class="px-4 py-2">ID</th>
+              <th class="px-4 py-2">Username</th>
+              <th class="px-4 py-2">Password</th>
+              <th class="px-4 py-2">User Type</th>
+              <th class="px-4 py-2">Score</th>
+              <th class="px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            {% for user in users_data %}
+            <tr>
+              <td class="px-4 py-2">{{ user[0] }}</td>
+              <td class="px-4 py-2">{{ user[1] }}</td>
+              <td class="px-4 py-2">{{ user[2] }}</td>
+              <td class="px-4 py-2">{{ user[3] }}</td>
+              <td class="px-4 py-2">{{ user[4] }}</td>
+              <td class="px-4 py-2">
+                <a href="#" class="edit-link">
+                  <img style="width: 15px" src="{{ editimage }}" alt="Edit Icon" />
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var popup = document.getElementById("popup");
+      var editLinks = document.querySelectorAll(".edit-link");
+      var cancelButton = document.getElementById("cancelButton");
+      var okButton = document.getElementById("okButton");
+      var mainSection = document.querySelector(".main");
+      var userForm = document.querySelector(".userform"); // Select the form
+
+      editLinks.forEach(function (editLink) {
+        editLink.addEventListener("click", function (event) {
+          event.preventDefault();
+          popup.style.display = "block";
+          mainSection.classList.add("popup-active");
+          mainSection.style.filter = "blur(5px)"; // Apply blur to the main section
+          userForm.style.display = "block"; // Show the form
+        });
+      });
+
+      function closePopup() {
+        popup.style.display = "none";
+        mainSection.classList.remove("popup-active");
+        mainSection.style.filter = "none"; // Remove blur from the main section
+        userForm.style.display = "none"; // Hide the form
+      }
+
+      cancelButton.addEventListener("click", closePopup);
+      okButton.addEventListener("click", closePopup);
+    });
+  </script>
+</body>
+
+</html>
