@@ -81,11 +81,11 @@
                 <tbody>
                     {% for item in cart_items %}
                     <tr class="border-b border-gray-200 py-2">
-                        <td class="font-semibold">{{ item.name }}</td>
+                        <td class="font-semibold">{{ item.item_name }}</td> <!-- Changed to item_name -->
                         <td class="text-blue-500">{{ item.quantity }}</td>
                         <td class="text-green-500">{{ item.price }}</td>
                         <td>
-                            <form action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="post">
+                            <form action="{{ url_for('remove_from_cart', item_name=item.item_name) }}" method="post">
                                 <button type="submit"
                                     class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-1 px-3 rounded">
                                     <i class="fi fi-rs-trash"></i>
