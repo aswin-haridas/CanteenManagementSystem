@@ -3,97 +3,149 @@ import sqlite3
 import hashlib
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
+app.secret_key = 'supersecretkey'  
 DATABASE = 'database.db'
-
-@app.context_processor
-def common_icons():
-    icons = {
-        'admin': "/static/assets/admin.png",
-        'customer': "/static/assets/customer.png",
-        'manager': "/static/assets/canteen-manager.png",
-        'editimage': "/static/assets/edit.png"
-    }
-    return icons
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route("/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        user_type = request.form.get("user-type")
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT role, username FROM users WHERE username=? AND password=?", (username, password))
-        user = cursor.fetchone()
-
-        if user:
-            session['username'] = user['username']
-            session['user_type'] = user['role']
-            if user_type == 'admin':
-                return render_template('usermgmt.html')
-            else:
-                return redirect(url_for('home'))
-        else:
-            return render_template('error.html')
-    return render_template('login.html')
-        
-
 @app.route('/home')
 def home():
-    current_user = session.get('username')
-    if current_user:
-        conn = get_db_connection()
-        menu_cursor = conn.execute('SELECT * FROM Menu')
-        menu_items = menu_cursor.fetchall()
-        cart_cursor = conn.execute('SELECT * FROM Cart WHERE ordered_by = ?', (current_user,))
-        cart_items = cart_cursor.fetchall()
-        total_price = sum(float(item['price']) * int(item['quantity']) for item in cart_items)
-        conn.close()
-        return render_template('home.html', current_user=current_user, menu_items=menu_items, cart_items=cart_items, total_price=total_price)
-    else:
-        return redirect(url_for("login"))
+    current_user = session.get('user_id', 1)  
+    conn = get_db_connection()
+    menu_cursor = conn.execute('SELECT * FROM Menu')
+    menu_items = menu_cursor.fetchall()
+    cart_cursor = conn.execute('SELECT * FROM Cart')
+    cart_items = cart_cursor.fetchall()
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items)
+    conn.close()
+    return render_template('home.html', menu_items=menu_items, cart_items=cart_items, total_price=total_price)
+
 
 @app.route('/user_management')
 def user_management():
-    if session.get('user_type') == 'admin':
-        conn = get_db_connection()
+    name=session.get("name")
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM users')
+    users_data = cursor.fetchall()
+    connection.close()
+    return render_template('usermgmt.html', users_data=users_data,name=name)
+
+
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        user_type_form = request.form.get("user-type")
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM users')
-        users_data = cursor.fetchall()
-        conn.close()
-        return render_template('usermgmt.html', users_data=users_data)
-    else:
-        flash("You don't have permission to access this page.", 'error')
-        return redirect(url_for("login"))
+        cursor.execute(
+            "SELECT id, role, username FROM users WHERE username=? AND password=?",
+            (username, password),
+        )
+        result = cursor.fetchone()
+
+        if result is not None:
+            user_id, user_type, name = result
+            session["user_id"] = user_id
+            session["user_type"] = user_type
+            session["username"] = username
+            session["name"] = name
+
+            if user_type_form == user_type:
+                return redirect(url_for("home"))
+        error_message = "Invalid username or password"
+        return render_template("error.html", error=error_message)
+
+    return render_template("login.html")
 
 @app.route("/profile")
 def profile():
-    current_user = session.get("username")
-    if current_user:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username=?", (current_user,))
-        user_info = cursor.fetchone()
+    user_id = session.get("user_id")
+    user_type = session.get("user_type")
 
-        if user_info:
-            return render_template("profile.html", user_info=user_info)
-        else:
-            flash("User not found", 'error')
-            return redirect(url_for("login"))
-    else:
-        return redirect(url_for("login"))
+    if user_id is None:
+        return "User ID not found"
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if user_type == "customer":
+        cursor.execute("SELECT id, name, dob, email, course, contact, address, pfp FROM studentlist WHERE id=?", (user_id,))
+        user_info = cursor.fetchone()
+        if user_info is None:
+            conn.close()
+            return "User not found"
+
+        id, name, dob, email, course, contact, address, pfp = user_info
+        conn.close()
+        return render_template(
+            "profile.html",
+            id=id,
+            user_type=user_type,
+            name=name,
+            dob=dob,
+            email=email,
+            pfp=pfp,
+            course=course,
+            contact=contact,
+            address=address,
+        )
+    
+    elif user_type == "manager":
+        cursor.execute("SELECT id, name, dob, email, department, contact, address, pfp FROM facultylist WHERE id=?", (user_id,))
+        user_info = cursor.fetchone()
+        if user_info is None:
+            conn.close()
+            return "User not found"
+
+        id, name, dob, email, department, contact, address, pfp = user_info
+        conn.close()
+        return render_template(
+            "profile.html",
+            id=id,
+            user_type=user_type,
+            name=name,
+            dob=dob,
+            email=email,
+            pfp=pfp,
+            course=department,
+            contact=contact,
+            address=address,
+        )
+    elif user_type == "admin":
+        cursor.execute("SELECT id, name, dob, email, department, contact, address, pfp FROM facultylist WHERE id=?", (user_id,))
+        user_info = cursor.fetchone()
+        if user_info is None:
+            conn.close()
+            return "User not found"
+
+        id, name, dob, email, department, contact, address, pfp = user_info
+        conn.close()
+        return render_template(
+            "profile.html",
+            id=id,
+            user_type=user_type,
+            name=name,
+            dob=dob,
+            email=email,
+            pfp=pfp,
+            course=department,
+            contact=contact,
+            address=address,
+        )
+
+    return "User not found"
 
 @app.route('/add_to_cart/<int:item_id>', methods=['POST'])
 def add_to_cart(item_id):
-    current_user = session.get('username')
-    if current_user:
+    if request.method == 'POST':
+        current_user = session.get('user_id')  
         conn = get_db_connection()
         item = conn.execute('SELECT name, price FROM Menu WHERE id = ?', (item_id,)).fetchone()
         existing_item = conn.execute('SELECT * FROM Cart WHERE item_id = ? AND ordered_by = ?', (item_id, current_user)).fetchone()
@@ -110,8 +162,8 @@ def add_to_cart(item_id):
 
 @app.route('/remove_from_cart/<int:item_id>', methods=['POST'])
 def remove_from_cart(item_id):
-    current_user = session.get('username')
-    if current_user:
+    if request.method == 'POST':
+        current_user = session.get('user_id')  
         conn = get_db_connection()
         conn.execute('DELETE FROM Cart WHERE item_id = ? AND ordered_by = ?', (item_id, current_user))
         conn.commit()
@@ -122,15 +174,13 @@ def remove_from_cart(item_id):
 
 @app.route('/checkout')
 def checkout():
-    current_user = session.get('username')
-    if current_user:
-        conn = get_db_connection()
-        conn.execute('DELETE FROM Cart WHERE ordered_by = ?', (current_user,))
-        conn.commit()
-        conn.close()
-        return render_template('checkout.html')
-    else:
-        return redirect(url_for("login"))
+    current_user = session.get('user_id')  
+    conn = get_db_connection()
+    conn.execute('DELETE FROM Cart WHERE user_id = ?', (current_user,))
+    conn.commit()
+    conn.close()
+    return render_template('checkout.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
