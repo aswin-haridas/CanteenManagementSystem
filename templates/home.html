@@ -19,7 +19,6 @@
             font-weight: 300;
             background-color: #ffffff;
         }
-
         .logo {
             font-size: 2rem;
             font-weight: bold;
@@ -31,6 +30,9 @@
 <body class="flex flex-col">
     <nav class="bg-white py-4 shadow-md">
         <div class="max-w mx-auto px-5 flex justify-between items-center">
+            <div>
+                HI {{ current_user }}
+            </div>
             <div class="text-center flex-grow">
                 <span class="logo">E D E R E</span>
             </div>
@@ -54,7 +56,7 @@
                             <h3 class="text-xl font-semibold mb-2">{{ item.name }}</h3>
                             <p class="text-gray-600 mb-3">Price: {{ item.price }}</p>
                             <form action="{{ url_for('add_to_cart', item_id=item.id) }}" method="post">
-                                
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
                                 <button type="submit"
                                     class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
                                     Add to Cart
