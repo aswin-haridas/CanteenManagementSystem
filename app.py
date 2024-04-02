@@ -22,7 +22,7 @@ def get_db_connection():
 
 @app.route('/home')
 def home():
-    current_user = session.get('user_id', 1)  
+    current_user = session.get('user_item_id', 1)  
     conn = get_db_connection()
     menu_cursor = conn.execute('SELECT * FROM Menu')
     menu_items = menu_cursor.fetchall()
@@ -51,17 +51,17 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        conn = sqlite3.connect(DATABASE)
+        conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, role, username FROM users WHERE username=? AND password=?",
+            "SELECT item_id, role, username FROM users WHERE username=? AND password=?",
             (username, password),
         )
         result = cursor.fetchone()
 
         if result is not None:
-            user_id, user_type, name = result
-            session["user_id"] = user_id
+            user_item_id, user_type, name = result
+            session["user_item_id"] = user_item_id
             session["user_type"] = user_type
             session["username"] = username
             session["name"] = name
@@ -78,27 +78,27 @@ def login():
 
 @app.route("/profile")
 def profile():
-    user_id = session.get("user_id")
+    user_item_id = session.get("user_item_id")
     user_type = session.get("user_type")
 
-    if user_id is None:
-        return "User ID not found"
+    if user_item_id is None:
+        return "User item_id not found"
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
     if user_type == "customer":
-        cursor.execute("SELECT id, name, dob, email, course, contact, address, pfp FROM studentlist WHERE id=?", (user_id,))
+        cursor.execute("SELECT item_id, name, dob, email, course, contact, address, pfp FROM user WHERE item_id=?", (user_item_id,))
         user_info = cursor.fetchone()
         if user_info is None:
             conn.close()
             return "User not found"
 
-        id, name, dob, email, course, contact, address, pfp = user_info
+        item_id, name, dob, email, course, contact, address, pfp = user_info
         conn.close()
         return render_template(
             "profile.html",
-            id=id,
+            item_id=item_id,
             user_type=user_type,
             name=name,
             dob=dob,
@@ -108,82 +108,38 @@ def profile():
             contact=contact,
             address=address,
         )
-    
-    elif user_type == "manager":
-        cursor.execute("SELECT id, name, dob, email, department, contact, address, pfp FROM facultylist WHERE id=?", (user_id,))
-        user_info = cursor.fetchone()
-        if user_info is None:
-            conn.close()
-            return "User not found"
-
-        id, name, dob, email, department, contact, address, pfp = user_info
-        conn.close()
-        return render_template(
-            "profile.html",
-            id=id,
-            user_type=user_type,
-            name=name,
-            dob=dob,
-            email=email,
-            pfp=pfp,
-            course=department,
-            contact=contact,
-            address=address,
-        )
-    elif user_type == "admin":
-        cursor.execute("SELECT id, name, dob, email, department, contact, address, pfp FROM facultylist WHERE id=?", (user_id,))
-        user_info = cursor.fetchone()
-        if user_info is None:
-            conn.close()
-            return "User not found"
-
-        id, name, dob, email, department, contact, address, pfp = user_info
-        conn.close()
-        return render_template(
-            "profile.html",
-            id=id,
-            user_type=user_type,
-            name=name,
-            dob=dob,
-            email=email,
-            pfp=pfp,
-            course=department,
-            contact=contact,
-            address=address,
-        )
-
     return "User not found"
 
-@app.route('/add_to_cart/<int:id>', methods=['POST'])
-def add_to_cart(id):
+@app.route('/add_to_cart/<int:item_id>', methods=['POST'])
+def add_to_cart(item_id):
     if request.method == 'POST':
-        current_user = session.get('user_id')  
+        current_user = session.get('user_item_id')  
         conn = get_db_connection()
-        existing_item = conn.execute('SELECT * FROM Cart WHERE id = ? AND user_id = ?', (id, current_user)).fetchone()
+        existing_item = conn.execute('SELECT * FROM Cart WHERE item_id = ? AND user_item_id = ?', (item_id, current_user)).fetchone()
         if existing_item:
             new_quantity = existing_item['quantity'] + 1
-            conn.execute('UPDATE Cart SET quantity = ? WHERE id = ?', (new_quantity, existing_item['id']))
+            conn.execute('UPDATE Cart SET quantity = ? WHERE item_id = ?', (new_quantity, existing_item['item_id']))
         else:
-            conn.execute('INSERT INTO Cart (id, quantity, user_id) VALUES (?, ?, ?)', (id, 1, current_user))
+            conn.execute('INSERT INTO Cart (item_id, quantity, user_item_id) VALUES (?, ?, ?)', (item_id, 1, current_user))
         conn.commit()
         conn.close()
     return redirect(url_for('home'))
 
-@app.route('/remove_from_cart/<int:id>', methods=['POST'])
-def remove_from_cart(id):
+@app.route('/remove_from_cart/<int:item_id>', methods=['POST'])
+def remove_from_cart(item_id):
     if request.method == 'POST':
-        current_user = session.get('user_id')  
+        current_user = session.get('user_item_id')  
         conn = get_db_connection()
-        conn.execute('DELETE FROM Cart WHERE id = ? AND user_id = ?', (id, current_user))
+        conn.execute('DELETE FROM Cart WHERE item_id = ? AND user_item_id = ?', (item_id, current_user))
         conn.commit()
         conn.close()
     return redirect(url_for('home'))
 
 @app.route('/checkout')
 def checkout():
-    current_user = session.get('user_id')  
+    current_user = session.get('user_item_id')  
     conn = get_db_connection()
-    conn.execute('DELETE FROM Cart WHERE user_id = ?', (current_user,))
+    conn.execute('DELETE FROM Cart WHERE user_item_id = ?', (current_user,))
     conn.commit()
     conn.close()
     return render_template('checkout.html')
