@@ -1,16 +1,16 @@
 import sqlite3
 
-DATABASE = 'canteen.db'
+DATABASE = 'database.db'
 
 def create_users_table():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS users (
+    cursor.execute('''CREATE TABLE IF NOT EXISTS Menu (
                     id INTEGER PRIMARY KEY,
-                    username TEXT NOT NULL UNIQUE,
-                    role TEXT NOT NULL,
-                    score INTEGER NOT NULL
+                    name TEXT NOT NULL UNIQUE,
+                    price real NOT NULL,
+                    image_url text NOT NULL
                     )''')
 
     conn.commit()
@@ -21,12 +21,17 @@ def add_users_with_roles():
     cursor = conn.cursor()
 
     users_with_roles = [
-        (0, "admin", "admin", 100),
-        (1, "canteen_manager", "canteen manager", 100),
-        (435034, "manu", "user", 100),  
+        ('Appam', 50, 'static/images/appam.jpg'),
+        ('Idiyappam', 45, 'static/images/idiyappam.jpg'),
+        ('Puttu', 40, 'static/images/puttu.jpg'),
+        ('Kerala Parotta', 45, 'static/images/porotta.jpg'),
+        ('Thalassery Biriyani', 120, 'static/images/biriyani.jpg'),
+        ('Kerala Fish Curry', 150, 'static/images/fishcurry.jpg'),
+        ('Avial', 80, 'static/images/avial.jpg'),
+        ('Sadya', 200, 'static/images/sadya.jpg')
     ]
 
-    cursor.executemany("INSERT INTO users (id, username, role, score) VALUES (?, ?, ?, ?)", users_with_roles)
+    cursor.executemany("INSERT INTO Menu (name, price, image_url) VALUES (?, ?, ?)", users_with_roles)
 
     conn.commit()
     conn.close()

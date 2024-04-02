@@ -3,7 +3,7 @@ import sqlite3
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Secret key for session management
-DATABASE = 'canteen.db'
+DATABASE = 'database.db'
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
