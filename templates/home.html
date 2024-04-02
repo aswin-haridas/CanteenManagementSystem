@@ -31,14 +31,14 @@
     <nav class="bg-white py-4 shadow-md">
         <div class="max-w mx-auto px-5 flex justify-between items-center">
             <div>
-                HI {{ current_user }}
+                
             </div>
             <div class="text-center flex-grow">
                 <span class="logo">E D E R E</span>
             </div>
             <div class="flex space-x-4 ml-auto items-end">
-                <a href="{{ url_for('home') }}" class="text-gray-800 font-semibold text-lg">Home</a>
-                <a href="#" class="text-gray-800 font-semibold text-lg">Profile</a>
+                <a href="{{ url_for('profile')}}" class="text-gray-800 font-semibold text-lg">Profile</a>
+                <a href="{{ url_for('logout') }}" class="text-gray-800 font-semibold text-lg">logout</a>
             </div>
         </div>
     </nav>
