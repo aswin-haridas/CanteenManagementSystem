@@ -1,12 +1,28 @@
 import sqlite3
 
-conn = sqlite3.connect('canteen.db')
-cursor = conn.cursor()
+db = sqlite3.connect("student.db")
 
-cursor.execute("UPDATE customers SET id = id + 5040 - 1")
+cursor = db.cursor()
 
-# Commit changes  
-conn.commit()
+sql_create_users = """
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
+"""
 
-# Close connection
-conn.close()
+# Execute the SQL statement to create 'users' table
+cursor.execute(sql_create_users)
+
+sql_insert = """
+INSERT INTO users (username, password)
+SELECT University_Reg_No, University_Reg_No
+FROM students;
+"""
+
+cursor.execute(sql_insert)
+
+db.commit()
+
+db.close

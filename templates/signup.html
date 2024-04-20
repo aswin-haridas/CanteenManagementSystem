@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Register Page</title>
+    <title>Signup Page</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,7 +25,7 @@
       font-family: "Poppins", sans-serif;
     }
 
-    .register-box {
+    .signup-box {
       width: 400px;
       padding: 40px;
       text-align: center;
@@ -76,7 +76,7 @@
     }
   </style>
   <body>
-    <div class="register-box">
+    <div class="signup-box">
       <div
         style="
           padding-bottom: 28px;
@@ -85,10 +85,10 @@
           justify-content: center;
         "
       >
-        <p>Register as</p>
+        <p>Signup as</p>
         <img id="user-image" src="{{customer}}" alt="Student Image" />
       </div>
-      <form method="POST" action="/register">
+      <form method="POST" action="/signup">
         <select
           name="user-type"
           class="select"
@@ -107,7 +107,7 @@
           required
         />
         <br />
-        <input type="submit" value="Register" />
+        <input type="submit" value="Signup" />
       </form>
     </div>
     <script>

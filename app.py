@@ -2,9 +2,8 @@ from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
 
 app = Flask(__name__)
-DATABASE = 'canteen.db'
+DATABASE = 'student.db'
 app.secret_key = 'super_secret_key'
-
 
 @app.context_processor
 def common_icons():
@@ -19,7 +18,6 @@ def common_icons():
         customer=customer,
         editimage=editimage
     )
-
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -44,23 +42,61 @@ def login():
             
             if user['role'] == 'admin':
                 return redirect(url_for('usermgmt'))
+            elif user['role'] =='manager':
+                return redirect(url_for('manager'))
             session['logged_in'] = True
-            return redirect(url_for('home', username=username))  # Sending the username to home.html
+            return redirect(url_for('home', username=username)) 
         else:
             return render_template('error.html')
     return render_template('login.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = get_db_connection()
-        conn.execute('INSERT INTO users(username, password) VALUES (?,?)', (username, password))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('login'))
-    return render_template('register.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    user_type = request.form.get('user-type')
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    if not username or not password:
+        return 'Username and password are required!', 400
+
+    if user_type not in users:
+        return 'Invalid user type!', 400
+
+    if username in users[user_type]:
+        return 'Username already exists!', 400
+
+    # You can add more logic here like saving to a database, session management, etc.
+
+    return redirect(url_for('login'))
+
+users = {
+    'customer': [],
+    'manager': [],
+    'admin': []
+}
+
+def signup():
+    user_type = request.form.get('user-type')
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    if not username or not password:
+        return 'Username and password are required!', 400
+
+    if user_type not in users:
+        return 'Invalid user type!', 400
+
+    if username in users[user_type]:
+        return 'Username already exists!', 400
+
+    users[user_type].append(username)
+
+    # You can add more logic here like saving to a database, session management, etc.
+
+    return redirect(url_for('index'))
+
+
 
 @app.route('/home')
 def home():
@@ -136,10 +172,6 @@ def profile():
         address=address,
     )
 
-
-
-
-
 @app.route('/checkout')
 def checkout():
     conn = get_db_connection()
@@ -154,7 +186,13 @@ def usermgmt():
     users_cursor = conn.execute('SELECT * FROM users')
     users_data = users_cursor.fetchall()
     return render_template('usermgmt.html' , users_data=users_data)
-
+    
+@app.route('/manager')
+def manager():
+    conn = get_db_connection()
+    menu = conn.execute('SELECT * FROM Menu')
+    menu = menu.fetchall()
+    return render_template('cmanager.html' , menu=menu)
 
 @app.route("/logout")
 def logout():

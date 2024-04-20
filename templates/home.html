@@ -9,21 +9,28 @@
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap&family=Satisfy&display=swap" rel="stylesheet" />
     <link rel="stylesheet"
         href="https://cdn-uicons.flaticon.com/2.2.0/uicons-regular-straight/css/uicons-regular-straight.css" />
     <style>
+        
         body {
             font-family: "Inter", sans-serif;
             font-optical-sizing: auto;
             font-weight: 300;
             background-color: #ffffff;
         }
+
         .logo {
+            font-family: "Satisfy", cursive;
             font-size: 2rem;
             font-weight: bold;
             color: #4a4a4a;
         }
+        #cartSidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
     </style>
 </head>
 
@@ -31,16 +38,20 @@
     <nav class="bg-white py-4 shadow-md">
         <div class="max-w mx-auto px-5 flex justify-between items-center">
             <div>
-                
+
             </div>
             <div class="text-center flex-grow">
-                <span class="logo">E D E R E</span>
+                <span class="logo">Edere</span>
             </div>
-            <div class="flex space-x-4 ml-auto items-end">
+            <div class="flex justify-center space-x-4 ml-auto items-end">
                 <a href="{{ url_for('profile')}}" class="text-gray-800 font-semibold text-lg">Profile</a>
                 <a href="{{ url_for('logout') }}" class="text-gray-800 font-semibold text-lg">logout</a>
+                <button class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded view-cart-button" type="button">
+                    View Cart
+                </button>
+                
             </div>
-        </div>
+
     </nav>
     <div class="flex flex-row mt-8">
         <section class="w-3/4 p-8 bg-white shadow-md mx-auto rounded-lg">
@@ -69,6 +80,10 @@
         </section>
         <aside class="w-1/4 bg-white shadow-md p-8 mx-auto rounded-lg">
             <h1 class="text-3xl font-bold text-center mb-8">Your Cart</h1>
+            <button class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded close-cart-button absolute top-4 right-4" type="button">
+                Close
+            </button>
+            
             <table class="w-full">
                 <thead>
                     <tr>
@@ -117,4 +132,20 @@
         </aside>
     </div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const viewCartButton = document.querySelector('.view-cart-button');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const closeCartButton = cartSidebar.querySelector('.close-cart-button');
+
+        viewCartButton.addEventListener('click', function() {
+            cartSidebar.classList.add('translate-x-0');
+        });
+
+        closeCartButton.addEventListener('click', function() {
+            cartSidebar.classList.remove('translate-x-0');
+        });
+    });
+</script>
+
 </html>
