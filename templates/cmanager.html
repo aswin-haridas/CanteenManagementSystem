@@ -8,51 +8,155 @@
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 p-8">
+    <div class="flex flex-wrap bg-gray-100 w-full h-screen">
+        <!-- Sidebar -->
+        <div class="w-3/12 bg-white rounded p-3 shadow-lg">
+            <!-- Profile Section -->
+            <div class="flex items-center space-x-4 p-2 mb-5">
+                <img class="h-12 rounded-full"
+                    src="http://www.gravatar.com/avatar/2acfb745ecf9d4dccb3364752d17f65f?s=260&d=mp" alt="James Bhatta">
+                <div>
+                    <h4 class="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">James Bhatta
+                    </h4>
+                    <span class="text-sm tracking-wide flex items-center space-x-1">
+                        <svg class="h-4 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        <span class="text-gray-600">Verified</span>
+                    </span>
+                </div>
+            </div>
+            <!-- Sidebar Links -->
+            <ul class="space-y-2 text-sm">
+                <li>
+                    <a href="#" class="sidebar-link">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link">
+                        <span>Menu Management</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link">
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link">
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link">
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link">
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-    <div class="container mx-auto px-4 py-8">
-
-        <h1 class="text-2xl font-semibold mb-4">Menu Management</h1>
-
-        <table class="min-w-full bg-white rounded-lg overflow-hidden">
-            <thead class="bg-gray-200">
-                <tr>
-                    <th class="py-2 px-4 border-b border-gray-300 text-left">Name</th>
-                    <th class="py-2 px-4 border-b border-gray-300 text-right">Price</th>
-                    <th class="py-2 px-4 border-b border-gray-300">Image</th>
-                    <th class="py-2 px-4 border-b border-gray-300">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for menu in menuList %}
-                <tr class="hover:bg-gray-100">
-                    <td class="py-2 px-4 border-b border-gray-300">{{ menu.name }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-right">{{ menu.price }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300">
-                        <div class="flex items-center">
-                            <img class="w-12 h-12 object-cover mr-4" src="{{ menu.image_url }}" alt="{{ menu.name }}" />
-                            <button class="text-blue-500 hover:text-blue-700">Edit Image</button>
+        <!-- Main Content -->
+        <div class="w-9/12">
+            <!-- Menu Management Section -->
+            <div class="p-4 text-gray-500">
+                <h1 class="text-3xl mb-8">Menu Management</h1>
+                <!-- Menu List -->
+                <div id="menu-list"
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                    {% for item in menu %}
+                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                        <img src="{{ item.image_url }}" alt="{{ item.name }} Image" class="w-full h-48 object-cover" />
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold mb-2">{{ item.name }}</h3>
+                            <p class="text-gray-600 mb-2">Price: {{ item.price }}</p>
+                            <p class="text-gray-600 mb-2">Availability: {{ item.availability }}</p>
+                            <p class="text-gray-600">{{ item.description }}</p>
+                            <!-- Edit Button -->
+                            <button onclick="openModal('{{ item.id }}')"
+                                class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Edit</button>
                         </div>
-                    </td>
-                    <td class="py-2 px-4 border-b border-gray-300">
-                        <button class="text-blue-500 hover:text-blue-700">
-                            <img class="w-4 h-4" src="{{ editIcon }}" alt="Edit Icon" />
-                        </button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Editing Menu Item -->
+        <div id="editModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <div class="bg-white p-6 rounded-lg z-10">
+                <h2 class="text-xl font-semibold mb-4">Edit Menu Item</h2>
+                <form id="editForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2" for="price">Price:</label>
+                        <input type="number" id="price" name="price" class="w-full px-3 py-2 border rounded-md" />
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2" for="availability">Availability:</label>
+                        <select id="availability" name="availability" class="w-full px-3 py-2 border rounded-md">
+                            <option value="available">Available</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2" for="foodType">Food Type:</label>
+                        <select id="foodType" name="foodType" class="w-full px-3 py-2 border rounded-md">
+                            <option value="veg">Veg</option>
+                            <option value="snack">Snack</option>
+                            <option value="drink">Drink</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+                    <button type="button" onclick="closeModal()"
+                        class="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- JavaScript for Modal -->
+        <script>
+            function openModal(itemId) {
+                fetchItemDetails(itemId)
+                    .then(updateModalInputs)
+                    .then(() => showModal());
+            }
+
+            function fetchItemDetails(itemId) {
+                return fetch('/get_item_details', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemId })
+                })
+                    .then(response => response.json());
+            }
+
+            function updateModalInputs(data) {
+                document.querySelector('#price').value = data.price;
+                document.querySelector('#availability').value = data.availability;
+                document.querySelector('#foodType').value = data.foodType;
+            }
+
+            function showModal() {
+                document.querySelector('#editModal').classList.remove('hidden');
+            }
+
+
+            function closeModal() {
+                document.getElementById('editModal').classList.add('hidden');
+            }
+        </script>
 
     </div>
-
-    <script>
-        // Example JavaScript for future interactivity
-        document.addEventListener("DOMContentLoaded", function () {
-            // Add JavaScript code here for interactivity
-        });
-    </script>
-
 </body>
 
 </html>

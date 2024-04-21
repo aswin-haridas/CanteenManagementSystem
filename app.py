@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, abort, jsonify, render_template, request, redirect, session, url_for
 import sqlite3
 
 app = Flask(__name__)
-DATABASE = 'student.db'
 app.secret_key = 'super_secret_key'
 
 @app.context_processor
@@ -19,10 +18,17 @@ def common_icons():
         editimage=editimage
     )
 
-def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
+def canteen_db():
+    conn = sqlite3.connect('canteen.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+def student_db():
+    conn = sqlite3.connect('student.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+#login.html----------------------------------------------------------------------------------------------------
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
@@ -31,7 +37,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        conn = get_db_connection()
+        conn = student_db()
         user = conn.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password)).fetchone()
         conn.close()
 
@@ -50,154 +56,165 @@ def login():
             return render_template('error.html')
     return render_template('login.html')
 
-
+#signup.html----------------------------------------------------------------------------------------
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    user_type = request.form.get('user-type')
-    username = request.form.get('username')
-    password = request.form.get('password')
-
-    if not username or not password:
-        return 'Username and password are required!', 400
-
-    if user_type not in users:
-        return 'Invalid user type!', 400
-
-    if username in users[user_type]:
-        return 'Username already exists!', 400
-
-    # You can add more logic here like saving to a database, session management, etc.
-
+    if request.method == 'POST':
+        conn = student_db()
+        conn.execute('INSERT INTO users VALUES (NULL,?,?,?)', (request.form['username'], request.form['password'],request.form['user-type']))
+        conn.commit()
+        conn.close()
     return redirect(url_for('login'))
 
-users = {
-    'customer': [],
-    'manager': [],
-    'admin': []
-}
 
-def signup():
-    user_type = request.form.get('user-type')
-    username = request.form.get('username')
-    password = request.form.get('password')
-
-    if not username or not password:
-        return 'Username and password are required!', 400
-
-    if user_type not in users:
-        return 'Invalid user type!', 400
-
-    if username in users[user_type]:
-        return 'Username already exists!', 400
-
-    users[user_type].append(username)
-
-    # You can add more logic here like saving to a database, session management, etc.
-
-    return redirect(url_for('index'))
-
-
+#home.html----------------------------------------------------------------------------------------
 
 @app.route('/home')
 def home():
-    conn = get_db_connection()
-    menu_cursor = conn.execute('SELECT * FROM Menu')  
+
+    #connected to canteen database instead
+    conn = sqlite3.connect('canteen.db')
+    conn.row_factory = sqlite3.Row
+
+    #fetch menu and cart items
+    menu_cursor = conn.execute('SELECT * FROM Menu')
     menu_items = menu_cursor.fetchall()
-    cart_cursor = conn.execute('SELECT * FROM Cart')
+    cart_cursor = conn.execute('SELECT * FROM Cart') 
     cart_items = cart_cursor.fetchall()
-    total_price = sum(item['price'] for item in cart_items)
+    
+    total_price = 0
+    for item in cart_items:
+        total_price += item['price'] * item['quantity']
+    
     conn.close()
     return render_template('home.html', menu_items=menu_items, cart_items=cart_items, total_price=total_price)
 
-@app.route('/add_to_cart/<int:item_id>', methods=['POST'])
-def add_to_cart(item_id):
-    conn = get_db_connection()  
-    item = conn.execute('SELECT name, price FROM Menu WHERE id = ?', (item_id,)).fetchone()
-    existing_item = conn.execute('SELECT * FROM Cart WHERE item_id = ?', (item_id,)).fetchone()
-    if existing_item:
-        new_quantity = existing_item['quantity'] + 1  
-        conn.execute('UPDATE Cart SET quantity = ? WHERE item_id = ?', (new_quantity, existing_item['item_id']))
-    else:
-        conn.execute('INSERT INTO Cart (item_id, item_name, price, quantity) VALUES (?, ?, ?, ?)', (item_id, item['name'], item['price'], 1))
-    conn.commit()
-    conn.close()
+
+@app.route('/add_to_cart/<int:menu_id>', methods=['POST'])
+def add_to_cart(menu_id):
+    with canteen_db() as conn:
+        menu_item = conn.execute(
+            'SELECT name, price FROM Menu WHERE id = ?', (menu_id,)).fetchone()
+        cart_item = conn.execute(
+            'SELECT * FROM Cart WHERE id = ?', (menu_id,)).fetchone()
+        if cart_item:
+            new_quantity = cart_item['quantity'] + 1
+            conn.execute(
+                'UPDATE Cart SET quantity = ? WHERE id = ?',
+                (new_quantity, cart_item['id']))
+        else:
+            conn.execute(
+                'INSERT INTO Cart (id, name, price, quantity) VALUES (?, ?, ?, ?)',
+                (menu_id, menu_item['name'], menu_item['price'], 1))
     return redirect(url_for('home'))
 
-@app.route('/remove_from_cart/<string:item_name>', methods=['POST'])  
-def remove_from_cart(item_name):  
-    conn = get_db_connection()
-    existing_item = conn.execute('SELECT * FROM Cart WHERE item_name = ?', (item_name,)).fetchone()  
+@app.route('/remove_from_cart/<string:name>', methods=['POST'])  
+def remove_from_cart(name):  
+    conn = canteen_db()
+    existing_item = conn.execute('SELECT * FROM Cart WHERE name = ?', (name,)).fetchone()  
     if existing_item:
         new_quantity = existing_item['quantity'] - 1  
         if new_quantity <= 0:
-            conn.execute('DELETE FROM Cart WHERE item_name = ?', (item_name,))  
+            conn.execute('DELETE FROM Cart WHERE name = ?', (name,))  
         else:
-            conn.execute('UPDATE Cart SET quantity = ? WHERE item_name = ?', (new_quantity, item_name))  
+            conn.execute('UPDATE Cart SET quantity = ? WHERE name = ?', (new_quantity, name))  
         conn.commit()
     conn.close()
     return redirect(url_for('home'))
 
-
-@app.route("/profile")
-def profile():
-    user_id = session.get("userid")
-    user_type = session.get("user_type")
-
-    if user_id is None:
-        return "User ID not found"
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT id, name, dob, email, department, contact, address, pfp FROM customers WHERE id=?", (user_id,))
-    user_info = cursor.fetchone()
-    
-    if user_info is None:
-        conn.close()
-        return "User not found"
-
-    id, name, dob, email, department, contact, address, pfp = user_info
-    conn.close()
-    
-    return render_template(
-        "profile.html",
-        id=id,
-        user_type=user_type,
-        name=name,
-        dob=dob,
-        email=email,
-        pfp=pfp,
-        course=department,
-        contact=contact,
-        address=address,
-    )
-
 @app.route('/checkout')
 def checkout():
-    conn = get_db_connection()
+    conn = canteen_db()
     conn.execute('DELETE FROM Cart')
     conn.commit()
     conn.close()
     return render_template('checkout.html')
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+#profile.html----------------------------------------------------------------------------------------
+@app.route("/profile")
+def profile():
+    user_id = session.get("userid")
+    if user_id is None:
+        return abort(404)
+
+    conn = student_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM customers WHERE id=?", (user_id,))
+    user_info = cursor.fetchone()
+    conn.close()
+
+    if user_info is None:
+        return abort(404)
+
+    return render_template(
+        "profile.html",
+        user_id=user_info["id"],
+        user_type=session["user_type"],
+        name=user_info["name"],
+        dob=user_info["dob"],
+        email=user_info["email"],
+        pfp=user_info["pfp"],
+        course=user_info["department"],
+        contact=user_info["contact"],
+        address=user_info["address"],
+    )
+
+
+#usermgmt.html----------------------------------------------------------------------------------------
+
 @app.route('/usermgmt')
 def usermgmt():
-    conn = get_db_connection()
+    conn = student_db()
     users_cursor = conn.execute('SELECT * FROM users')
     users_data = users_cursor.fetchall()
     return render_template('usermgmt.html' , users_data=users_data)
     
 @app.route('/manager')
 def manager():
-    conn = get_db_connection()
+    conn = canteen_db()
     menu = conn.execute('SELECT * FROM Menu')
     menu = menu.fetchall()
     return render_template('cmanager.html' , menu=menu)
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("login"))
+@app.route('/get_item_details', methods=['POST'])
+def get_item_details():
+    item_id = request.json['itemId']
+    
+    
+    conn = canteen_db()
+    items =conn.execute('SELECT * FROM menu WHERE id=?', (item_id,))
+    item = items.fetchone()
+    conn.close()
+    
+    item_details = {
+        'id': item[0],
+        'price': item[1], 
+        'availability': item[2],
+        'foodType': item[3]
+    }
+    
+    return jsonify(item_details)
+
+
+@app.route('/edit_item', methods=['POST'])
+def edit_item():
+    item_id = request.form['itemId']
+    price = request.form['price']
+    availability = request.form['availability']
+    foodType = request.form['foodType']
+    
+    conn = canteen_db()
+    conn.execute('UPDATE Menu SET price=?, availability=?, foodType=? WHERE id=?', (price, availability, foodType, item_id))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('manager'))
 
 if __name__ == '__main__':
     app.run(debug=True)
