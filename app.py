@@ -109,11 +109,13 @@ def add_to_cart(menu_id):
                 (new_quantity, cart_item['id']))
         else:
             conn.execute(
-                'INSERT INTO Cart (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
+                'INSERT or IGNORE INTO Cart (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
                 (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
+            conn.commit()
             conn.execute(
-                'INSERT INTO Orders (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
+                'INSERT or IGNORE INTO Orders (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
                 (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
+            conn.commit()
             
     return redirect(url_for('home'))
 
