@@ -111,6 +111,9 @@ def add_to_cart(menu_id):
             conn.execute(
                 'INSERT INTO Cart (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
                 (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
+            conn.execute(
+                'INSERT INTO Orders (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
+                (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
             
     return redirect(url_for('home'))
 
@@ -194,29 +197,25 @@ def profile():
     )
 
 
-
-@app.route('/orders', methods=['GET'])
-def Orders():
+@app.route('/orders')
+def orders():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
 
-    user_name = session.get('user_name')
+    user = session['user_name']
 
-    conn = canteen_db()
-    orders = conn.execute('SELECT * FROM Orders WHERE ordered_by = ?', (user_name,)).fetchall()
-    conn.close()
+    with canteen_db() as conn:
+        orders = conn.execute('SELECT * FROM orders WHERE ordered_by = ?', (user,)).fetchall()
 
     return render_template('orders.html', orders=orders)
-
     
 @app.route('/delete_order', methods=['POST'])
 def delete_order():
     order_id = request.form.get('order_id')
     with canteen_db() as conn:
-        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('cancelled', order_id))
+        conn.execute('DELETE FROM Orders WHERE id = ?', (order_id,))
         conn.commit()
     return redirect('/orders')
-
 
 @app.route('/usermgmt')
 def usermgmt():

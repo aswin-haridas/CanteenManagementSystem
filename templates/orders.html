@@ -55,7 +55,7 @@
         </thead>
         <tbody>
             {% for order in orders %}
-            {% if order.status != "cancelled" %}
+            {% if order[7] != "cancelled" %}
             <tr>
                 <td>{{ order[0] }}</td>
                 <td>{{ order[1] }}</td>
@@ -64,7 +64,7 @@
                 <td>
                     <form action="/delete_order" method="post">
                         <input type="hidden" name="order_id" value="{{ order[0] }}">
-                        <button type="submit">Cancel</button>
+                        <button type="submit">Delete</button>
                     </form>
                 </td>
             </tr>
