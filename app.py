@@ -109,7 +109,7 @@ def add_to_cart(menu_id):
                 (new_quantity, cart_item['id']))
         else:
             conn.execute(
-                'INSERT INTO Orders (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
+                'INSERT INTO Cart (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
                 (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
             
     return redirect(url_for('home'))
@@ -124,7 +124,6 @@ def remove_from_cart(name):
             conn.execute('DELETE FROM Cart WHERE name = ?', (name,))  
         else:
             conn.execute('UPDATE Cart SET quantity = ? WHERE name = ?', (new_quantity, name))  
-
         conn.commit()
     conn.close()
     return redirect(url_for('home'))
