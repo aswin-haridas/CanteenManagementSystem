@@ -5,77 +5,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 8px;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2
-        }
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <!-- Add Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <h1>Orders</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Item Name</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            {% if order[7] != "cancelled" %}
-            <tr>
-                <td>{{ order[0] }}</td>
-                <td>{{ order[1] }}</td>
-                <td>{{ order[2] }}</td>
-                <td>{{ order[4] }}</td>
-                <td>
-                    <form action="/delete_order" method="post">
-                        <input type="hidden" name="order_id" value="{{ order[0] }}">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endif %}
-            {% endfor %}
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+        <h1 class="text-2xl font-bold mb-4">Orders</h1>
+        <table class="min-w-full bg-white border-collapse border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="bg-green-500 text-white px-4 py-2">Order ID</th>
+                    <th class="bg-green-500 text-white px-4 py-2">Item Name</th>
+                    <th class="bg-green-500 text-white px-4 py-2">Price</th>
+                    <th class="bg-green-500 text-white px-4 py-2">Quantity</th>
+                    <th class="bg-green-500 text-white px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                {% if order[7] != "cancelled" %}
+                <tr class="{{ loop.index % 2 == 0 ? 'bg-gray-200' : 'bg-white' }}">
+                    <td class="border px-4 py-2">{{ order[0] }}</td>
+                    <td class="border px-4 py-2">{{ order[1] }}</td>
+                    <td class="border px-4 py-2">{{ order[2] }}</td>
+                    <td class="border px-4 py-2">{{ order[4] }}</td>
+                    <td class="border px-4 py-2">
+                        <form action="/delete_order" method="post">
+                            <input type="hidden" name="order_id" value="{{ order[0] }}">
+                            <button type="submit"
+                                class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
 
-        </tbody>
-    </table>
-
-
-    <form action="/home" method="post"><button>Home</button></form>
+        <form action="/home" method="post" class="mt-4">
+            <button class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded">Home</button>
+        </form>
+    </div>
 </body>
 
 </html>

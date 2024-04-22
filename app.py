@@ -112,10 +112,10 @@ def add_to_cart(menu_id):
                 'INSERT or IGNORE INTO Cart (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
                 (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
             conn.commit()
-            conn.execute(
-                'INSERT or IGNORE INTO Orders (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
-                (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
-            conn.commit()
+            # conn.execute(
+            #     'INSERT or IGNORE INTO Orders (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
+            #     (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
+            # conn.commit()
             
     return redirect(url_for('home'))
 
@@ -143,6 +143,12 @@ def checkout():
     
     receipt_number = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
+    for item in cart_items:
+        conn.execute(
+            'INSERT INTO Orders (id, name, price, quantity, ordered_by, customer_score, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            (item['id'], item['name'], item['price'], item['quantity'], item['ordered_by'], item['customer_score'], item['status']))
+    conn.commit()
+          
     conn.execute('DELETE FROM Cart')
     conn.commit()
     conn.close()
@@ -226,12 +232,24 @@ def usermgmt():
     users_data = users_cursor.fetchall()
     return render_template('usermgmt.html' , users_data=users_data)
     
+@app.route('/edit_user', methods=['POST'])
+def edit_user():
+    user_id = request.form.get('user_id')
+    username = request.form.get('username')
+    password = request.form.get('password')
+    role = request.form.get('role')
+    score = request.form.get('score')
+    with canteen_db() as conn:
+        conn.execute('UPDATE users SET username = ?, password = ?, role = ? score = ? WHERE id = ?', (username, password, role, user_id, score))
+        conn.commit()
+    return redirect('/usermgmt')
+
 
 @app.route('/manager')
 def manager():
     with canteen_db() as conn:
         menu = conn.execute('SELECT * FROM Menu').fetchall()
-        orders = conn.execute('SELECT * FROM Cart').fetchall()
+        orders = conn.execute('SELECT * FROM Orders').fetchall()
         reports = conn.execute('SELECT * FROM Reports').fetchall()
     return render_template('cmanager.html', menu=menu, orders=orders , reports=reports)
 
@@ -239,7 +257,7 @@ def manager():
 def accept_order():
     order_id = request.form.get('order_id')
     with canteen_db() as conn:
-        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('accepted', order_id))
+        conn.execute('UPDATE Orders SET status = ? WHERE id = ?', ('accepted', order_id))
         conn.commit()
     return redirect('/manager')
 
@@ -247,9 +265,9 @@ def accept_order():
 def cancel_order():
     order_id = request.form.get('order_id')
     with canteen_db() as conn:
-        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('cancelled', order_id))
+        conn.execute('UPDATE Orders SET status = ? WHERE id = ?', ('cancelled', order_id))
         conn.commit()
-        conn.execute('DELETE FROM Cart WHERE id = ?', (order_id,))
+        conn.execute('DELETE FROM Orders WHERE id = ?', (order_id,))
         conn.commit()
     return redirect('/manager')
 
@@ -257,14 +275,16 @@ def cancel_order():
 def served_order():
     order_id = request.form['order_id']
     with canteen_db() as conn:
-        order = conn.execute('SELECT * FROM Cart WHERE id = ?', (order_id,)).fetchone()
+        order = conn.execute('SELECT * FROM Orders WHERE id = ?', (order_id,)).fetchone()
         conn.execute("""
             INSERT INTO Reports (item_name, item_price, ordered_by, item_quantity, timestamp)
             VALUES (?, ?, ?, ?, ?)
             """, (order['name'], order['price'], order['ordered_by'], order['quantity'],
                   datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('served', order_id))
-        conn.execute('DELETE FROM Cart WHERE id = ?', (order_id,))
+        conn.execute('UPDATE Orders SET status = ? WHERE id = ?', ('served', order_id))
+        conn.commit()
+        conn.execute('DELETE FROM Orders WHERE id = ?', (order_id,))
+        conn.commit()
     return redirect('/manager')
 
 
@@ -292,6 +312,15 @@ def edit_item():
     conn.commit()
     conn.close()
     return redirect('/manager')
+
+@app.route('/delete_item', methods=['POST'])
+def delete_item():
+    item_id = request.form.get('item_id')
+    with canteen_db() as conn:
+        conn.execute('DELETE FROM Menu WHERE id = ?', (item_id,))
+        conn.commit()
+    return redirect('/manager')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
