@@ -57,6 +57,7 @@ def login():
     return render_template('login.html')
 
 #signup.html----------------------------------------------------------------------------------------
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -65,7 +66,6 @@ def signup():
         conn.commit()
         conn.close()
     return redirect(url_for('login'))
-
 
 #home.html----------------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ def home():
     menu_items = menu_cursor.fetchall()
     cart_cursor = conn.execute('SELECT * FROM Cart') 
     cart_items = cart_cursor.fetchall()
-    
+
     total_price = 0
     for item in cart_items:
         total_price += item['price'] * item['quantity']
@@ -145,7 +145,7 @@ def profile():
     conn = student_db()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM customers WHERE id=?", (user_id,))
+    cursor.execute("SELECT * FROM students WHERE id=?", (user_id,))
     user_info = cursor.fetchone()
     conn.close()
 
