@@ -138,11 +138,6 @@ def checkout():
     
     receipt_number = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
-    
-    for cart_item in cart_items:
-        conn.execute(
-            'INSERT INTO orders (id, name, price, quantity, ordered_by, customer_score, status, receipt_number) VALUES (?, ?, ?, ?, ?, ?, "ordered", ?)',
-            (cart_item['id'], cart_item['name'], cart_item['price'], cart_item['quantity'], cart_item['ordered_by'], cart_item['customer_score'], receipt_number))
     conn.execute('DELETE FROM Cart')
     conn.commit()
     conn.close()
