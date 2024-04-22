@@ -1,4 +1,7 @@
-from flask import Flask, abort, jsonify, render_template, request, redirect, session, url_for
+from datetime import datetime
+import random
+import string
+from flask import Flask, abort, render_template, request, redirect, session, url_for
 import sqlite3
 
 app = Flask(__name__)
@@ -45,7 +48,6 @@ def login():
             session['userid'] = user['id']
             session['user_type'] = user['role']
             session['user_name'] = user['username']
-            
             if user['role'] == 'admin':
                 return redirect(url_for('usermgmt'))
             elif user['role'] =='manager':
@@ -69,29 +71,32 @@ def signup():
 
 #home.html----------------------------------------------------------------------------------------
 
-@app.route('/home')
+@app.route('/home',methods=['GET', 'POST'])
 def home():
-
     #connected to canteen database instead
     conn = sqlite3.connect('canteen.db')
     conn.row_factory = sqlite3.Row
-
-    #fetch menu and cart items
     menu_cursor = conn.execute('SELECT * FROM Menu')
     menu_items = menu_cursor.fetchall()
     cart_cursor = conn.execute('SELECT * FROM Cart') 
     cart_items = cart_cursor.fetchall()
-
     total_price = 0
     for item in cart_items:
         total_price += item['price'] * item['quantity']
-    
     conn.close()
-    return render_template('home.html', menu_items=menu_items, cart_items=cart_items, total_price=total_price)
-
+    return render_template('home.html', menu_items=menu_items, cart_items=cart_items, total_price=total_price )
 
 @app.route('/add_to_cart/<int:menu_id>', methods=['POST'])
 def add_to_cart(menu_id):
+    username= session.get("user_name")
+
+    db = student_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT score FROM users WHERE username = ?", (username,))
+    score = cursor.fetchone()[0]
+    db.commit()
+    db.close()
+
     with canteen_db() as conn:
         menu_item = conn.execute(
             'SELECT name, price FROM Menu WHERE id = ?', (menu_id,)).fetchone()
@@ -104,8 +109,9 @@ def add_to_cart(menu_id):
                 (new_quantity, cart_item['id']))
         else:
             conn.execute(
-                'INSERT INTO Cart (id, name, price, quantity) VALUES (?, ?, ?, ?)',
-                (menu_id, menu_item['name'], menu_item['price'], 1))
+                'INSERT INTO Orders (id, name, price, quantity , ordered_by,customer_score ,status) VALUES (?, ?, ?, ?, ?, ?, "ordered")',
+                (menu_id, menu_item['name'], menu_item['price'], 1, username, score))
+            
     return redirect(url_for('home'))
 
 @app.route('/remove_from_cart/<string:name>', methods=['POST'])  
@@ -118,6 +124,7 @@ def remove_from_cart(name):
             conn.execute('DELETE FROM Cart WHERE name = ?', (name,))  
         else:
             conn.execute('UPDATE Cart SET quantity = ? WHERE name = ?', (new_quantity, name))  
+
         conn.commit()
     conn.close()
     return redirect(url_for('home'))
@@ -125,10 +132,19 @@ def remove_from_cart(name):
 @app.route('/checkout')
 def checkout():
     conn = canteen_db()
-    conn.execute('DELETE FROM Cart')
-    conn.commit()
+    cart_items = conn.execute('SELECT * FROM Cart').fetchall()
+    total_price = 0
+    for item in cart_items:
+        total_price += item['price'] * item['quantity']
+    # Generate a random receipt number
+    receipt_number = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    
     conn.close()
-    return render_template('checkout.html')
+    return render_template('checkout.html', cart_items=cart_items, total_price=total_price, receipt_number=receipt_number)
+
+@app.route('/processing')
+def processing():
+    return render_template('processing.html')
 
 @app.route("/logout")
 def logout():
@@ -138,14 +154,14 @@ def logout():
 #profile.html----------------------------------------------------------------------------------------
 @app.route("/profile")
 def profile():
-    user_id = session.get("userid")
-    if user_id is None:
+    username = session.get("user_name")
+    if username is None:
         return abort(404)
 
     conn = student_db()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM students WHERE id=?", (user_id,))
+    cursor.execute("SELECT * FROM students WHERE University_Reg_No=?", (username,))
     user_info = cursor.fetchone()
     conn.close()
 
@@ -153,17 +169,54 @@ def profile():
         return abort(404)
 
     return render_template(
-        "profile.html",
-        user_id=user_info["id"],
-        user_type=session["user_type"],
-        name=user_info["name"],
-        dob=user_info["dob"],
-        email=user_info["email"],
-        pfp=user_info["pfp"],
-        course=user_info["department"],
-        contact=user_info["contact"],
-        address=user_info["address"],
-    )
+    "profile.html",
+    user_id=user_info["Student_ID"],
+    admission_no=user_info["Admission_No"],
+    Sl_No=user_info["Sl_No"],
+    Roll_No=user_info["Roll_No"],
+    Admission_No=user_info["Admission_No"],
+    University_Reg_No=user_info["University_Reg_No"],
+    Student_ID=user_info["Student_ID"],
+    User_Name=user_info["User_Name"],
+    Department=user_info["Department"],
+    Batch=user_info["Batch"],
+    Primary_Email_ID=user_info["Primary_Email_ID"],
+    Gender=user_info["Gender"],
+    Date_of_Birth=user_info["Date_of_Birth"],
+    Birth_Place=user_info["Birth_Place"],
+    State=user_info["State"],
+    Admission_Date=user_info["Admission_Date"],
+    Current_Address=user_info["Current_Address"],
+    Permenant_Address=user_info["Permenant_Address"],
+    Student_Phone=user_info["Student_Phone"],
+    Parent_Phone=user_info["Parent_Phone"],
+    Religion=user_info["Religion"],
+    Caste=user_info["Caste"],
+    pfp=user_info["pfp"]
+)
+
+#orders.html----------------------------------------------------------------------------------------
+@app.route('/orders', methods=['GET'])
+def Orders():
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+
+    user_name = session.get('user_name')
+
+    conn = canteen_db()
+    orders = conn.execute('SELECT * FROM Cart WHERE ordered_by = ?', (user_name,)).fetchall()
+    conn.close()
+
+    return render_template('orders.html', orders=orders)
+
+    
+@app.route('/delete_order', methods=['POST'])
+def delete_order():
+    order_id = request.form.get('order_id')
+    with canteen_db() as conn:
+        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('cancelled', order_id))
+        conn.commit()
+    return redirect('/orders')
 
 
 #usermgmt.html----------------------------------------------------------------------------------------
@@ -175,46 +228,75 @@ def usermgmt():
     users_data = users_cursor.fetchall()
     return render_template('usermgmt.html' , users_data=users_data)
     
+
+
+#canteenmanager.html----------------------------------------------------------------------------------------
 @app.route('/manager')
 def manager():
-    conn = canteen_db()
-    menu = conn.execute('SELECT * FROM Menu')
-    menu = menu.fetchall()
-    return render_template('cmanager.html' , menu=menu)
+    with canteen_db() as conn:
+        menu = conn.execute('SELECT * FROM Menu').fetchall()
+        orders = conn.execute('SELECT * FROM Cart').fetchall()
+        reports = conn.execute('SELECT * FROM Reports').fetchall()
+    return render_template('cmanager.html', menu=menu, orders=orders , reports=reports)
 
-@app.route('/get_item_details', methods=['POST'])
-def get_item_details():
-    item_id = request.json['itemId']
-    
-    
-    conn = canteen_db()
-    items =conn.execute('SELECT * FROM menu WHERE id=?', (item_id,))
-    item = items.fetchone()
-    conn.close()
-    
-    item_details = {
-        'id': item[0],
-        'price': item[1], 
-        'availability': item[2],
-        'foodType': item[3]
-    }
-    
-    return jsonify(item_details)
+
+@app.route('/accept_order', methods=['POST'])
+def accept_order():
+    order_id = request.form.get('order_id')
+    with canteen_db() as conn:
+        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('accepted', order_id))
+        conn.commit()
+    return redirect('/manager')
+
+@app.route('/cancel_order', methods=['POST'])
+def cancel_order():
+    order_id = request.form.get('order_id')
+    with canteen_db() as conn:
+        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('cancelled', order_id))
+        conn.commit()
+        conn.execute('DELETE FROM Cart WHERE id = ?', (order_id,))
+        conn.commit()
+    return redirect('/manager')
+
+@app.route('/served_order', methods=['POST'])
+def served_order():
+    order_id = request.form['order_id']
+    with canteen_db() as conn:
+        order = conn.execute('SELECT * FROM Cart WHERE id = ?', (order_id,)).fetchone()
+        conn.execute("""
+            INSERT INTO Reports (item_name, item_price, ordered_by, item_quantity, timestamp)
+            VALUES (?, ?, ?, ?, ?)
+            """, (order['name'], order['price'], order['ordered_by'], order['quantity'],
+                  datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        conn.execute('UPDATE Cart SET status = ? WHERE id = ?', ('served', order_id))
+        conn.execute('DELETE FROM Cart WHERE id = ?', (order_id,))
+    return redirect('/manager')
 
 
 @app.route('/edit_item', methods=['POST'])
 def edit_item():
-    item_id = request.form['itemId']
-    price = request.form['price']
-    availability = request.form['availability']
-    foodType = request.form['foodType']
+
+    item_id = request.form['item_id']
+    item_name = request.form['item_name']
+    item_price = request.form['item_price']
+    item_image = request.form['item_image']
+    item_availability = request.form['item_availability']
+    item_food_type = request.form['item_food_type']
+
     
-    conn = canteen_db()
-    conn.execute('UPDATE Menu SET price=?, availability=?, foodType=? WHERE id=?', (price, availability, foodType, item_id))
+    conn = sqlite3.connect('canteen.db')
+    cursor = conn.cursor()
+
+  
+    cursor.execute("""
+        UPDATE menu 
+        SET name=?, price=?, image_url=?, availability=?, foodtype=?
+        WHERE id=?
+    """, (item_name, item_price, item_image, item_availability, item_food_type, item_id))
+
     conn.commit()
     conn.close()
-    
-    return redirect(url_for('manager'))
+    return redirect('/manager')
 
 if __name__ == '__main__':
     app.run(debug=True)

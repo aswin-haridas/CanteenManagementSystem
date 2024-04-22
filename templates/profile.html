@@ -1,43 +1,49 @@
 <!DOCTYPE html>
 <html class="h-full">
-  <head>
-    <title>StudentSpace</title>
-    <link
-      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
 
-  <body class="bg-gray-100 h-full flex items-center justify-center">
-    <div class="main p-8">
-      <div class="main1 bg-white p-8 rounded-lg shadow-md">
-        <div class="student-profile">
-          <h2 class="text-2xl font-bold mb-4">Customer Profile</h2>
-          <div class="profile-photo mt-4">
-            <img
-              src="{{ url_for('static', filename='pfp/' + pfp) }}"
-              alt="User Image"
-              class="rounded-full h-60 w-60 object-cover"
-            />
-          </div>
-          <ul class="student-details">
-            <li>Admission No : CS0{{ id }}</li>
-            <li>Name: {{ name }}</li>
-            <li>Date of Birth: {{ dob }}</li>
-            <li>Email: {{ email }}</li>
-            <li>Course: {{ course }}</li>
-            <li>Contact: {{ contact }}</li>
-            <li>Address: {{ address }}</li>
-          </ul>
+<head>
+  <title>StudentSpace</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body class="bg-gray-100 h-full flex items-center justify-center">
+  <div class="main p-8">
+    <div class="main1 bg-white p-8 rounded-lg shadow-md">
+      <div class="student-profile">
+        <h2 class="text-2xl font-bold mb-4">Customer Profile</h2>
+        <div class="profile-photo mt-4">
+          <img src="{{ url_for('static', filename='pfp/' + pfp) }}" alt="User Image"
+            class="rounded-full h-60 w-60 object-cover" />
         </div>
-        
+        <ul class="student-details mt-4">
+          <li>Sl No: {{ Sl_No }}</li>
+          <li>Roll No: {{ Roll_No }}</li>
+          <li>Admission No: {{ Admission_No }}</li>
+          <li>University Reg No: {{ University_Reg_No }}</li>
+          <li>Student ID: {{ Student_ID }}</li>
+          <li>User Name: {{ User_Name }}</li>
+          <li>Department: {{ Department }}</li>
+          <li>Batch: {{ Batch }}</li>
+          <li>Primary Email ID: {{ Primary_Email_ID }}</li>
+          <li>Gender: {{ Gender }}</li>
+          <li>Date of Birth: {{ Date_of_Birth }}</li>
+          <li>Birth Place: {{ Birth_Place }}</li>
+          <li>State: {{ State }}</li>
+          <li>Admission Date: {{ Admission_Date }}</li>
+          <li>Current Address: {{ Current_Address }}</li>
+          <li>Permanent Address: {{ Permenant_Address }}</li>
+          <li>Student Phone: {{ Student_Phone }}</li>
+          <li>Parent Phone: {{ Parent_Phone }}</li>
+          <li>Religion: {{ Religion }}</li>
+          <li>Caste: {{ Caste }}</li>
+        </ul>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

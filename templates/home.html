@@ -1,174 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>E D E R E</title>
-    <link
-      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap&family=Satisfy&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn-uicons.flaticon.com/2.2.0/uicons-regular-straight/css/uicons-regular-straight.css"
-    />
-  </head>
-  <style>
-    body {
-      font-family: "Inter", sans-serif;
-    }
-  </style>
-  <body class="font-inter bg-white">
-    <nav class="bg-white py-4 shadow-md">
-      <div class="max-w mx-auto px-5 flex justify-between items-center">
-        <div></div>
-        <div class="flex-grow text-center">
-          <span class="font-satisfy text-2xl font-bold text-gray-700"
-            >Edere</span
-          >
-        </div>
-        <div class="flex space-x-4 ml-auto">
-          <a
-            href="{{ url_for('profile') }}"
-            class="text-gray-800 font-semibold text-lg"
-            >Profile</a
-          >
-          <a
-            href="{{ url_for('logout') }}"
-            class="text-gray-800 font-semibold text-lg"
-            >Logout</a
-          >
-        </div>
-      </div>
-    </nav>
 
-    <div class="flex mt-8">
-      <section class="w-6/10 p-8">
-        <div class="mb-4 flex space-x-2">
-          <button
-            type="button"
-            class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900"
-          >
-            Veg
-          </button>
-          <button
-            type="button"
-            class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900"
-          >
-            Drinks
-          </button>
-          <button
-            type="button"
-            class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900"
-          >
-            Snacks
-          </button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E D E R E</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap&family=Satisfy&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://cdn-uicons.flaticon.com/2.2.0/uicons-regular-straight/css/uicons-regular-straight.css" />
+</head>
+<style>
+  body {
+    font-family: "Inter", sans-serif;
+  }
+</style>
+
+<body class="font-inter bg-white">
+  <nav class="bg-white py-4 shadow-md">
+    <div class="max-w mx-auto px-5 flex justify-between items-center">
+      <div></div>
+      <div class="flex-grow text-center">
+        <span class="font-satisfy text-2xl font-bold text-gray-700">Edere</span>
+      </div>
+      <div class="flex space-x-4 ml-auto">
+        <a href="{{ url_for('profile') }}" class="text-gray-800 font-semibold text-lg">Profile</a>
+        <a href="{{ url_for('Orders') }}" class="text-gray-800 font-semibold text-lg">Orders</a>
+        <a href="{{ url_for('logout') }}" class="text-gray-800 font-semibold text-lg">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="flex mt-8">
+    <section class="w-6/10 p-8">
+      <div class="mb-4 flex space-x-2">
+        <button type="button"
+          class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
+          Veg
+        </button>
+        <button type="button"
+          class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
+          Drinks
+        </button>
+        <button type="button"
+          class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
+          Snacks
+        </button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+        {% for item in menu_items %}
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <img class="w-full h-32 object-cover" src="{{ item.image_url }}" alt="{{ item.name }} Image" />
+          <div class="p-4">
+            <h3 class="text-xl font-semibold mb-2">{{ item.name }}</h3>
+            <p class="text-gray-600 mb-3">Price: {{ item.price }}</p>
+            {% if item.availability != "available" %}
+            <p class="text-gray-400">OUT OF ORDER</p>
+            {% else %}
+            <form action="{{ url_for('add_to_cart', menu_id=item.id) }}" method="post">
+              <button type="submit"
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                Add to Cart
+              </button>
+            </form>
+            {% endif %}
+          </div>
         </div>
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
-        >
-          {% for item in menu_items %}
-          <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <img
-              class="w-full h-32 object-cover"
-              src="{{ item.image_url }}"
-              alt="{{ item.name }} Image"
-            />
-            <div class="p-4">
-              <h3 class="text-xl font-semibold mb-2">{{ item.name }}</h3>
-              <p class="text-gray-600 mb-3">Price: {{ item.price }}</p>
-              <form
-                action="{{ url_for('add_to_cart', menu_id=item.id) }}"
-                method="post"
-              >
-                <button
-                  type="submit"
-                  class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200"
-                >
-                  Add to Cart
+        {% endfor %}
+      </div>
+
+    </section>
+
+    <aside class="w-4/10 p-8 bg-white shadow-md rounded-lg">
+      <h1 class="text-3xl font-bold text-center mb-8">Your Cart</h1>
+
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Item Name</th>
+            <th class="text-left">Quantity</th>
+            <th class="text-left">Price</th>
+            <th class="text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr class="border-b border-gray-200 py-2">
+            <td class="font-semibold">{{ item.name }}</td>
+            <td class="text-blue-500 font-bold">{{ item.quantity }}</td>
+            <td class="text-green-500">{{ item.price }}</td>
+            <td>
+              <form action="{{ url_for('remove_from_cart', name=item.name) }}" method="post">
+                <button type="submit" class="text-red-500 font-bold py-1 px-3">
+                  <i class="fi fi-rs-trash"></i>
                 </button>
               </form>
-            </div>
-          </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="text-center text-gray-500 py-2">
+              Your cart is empty.
+            </td>
+          </tr>
           {% endfor %}
-        </div>
-      </section>
+          <tr class="border-t border-gray-200 py-2">
+            <td colspan="2" class="font-bold text-xl">Total</td>
+            <td colspan="2" class="text-green-500 font-bold text-xl">
+              {{ total_price }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <aside class="w-4/10 p-8 bg-white shadow-md rounded-lg">
-        <h1 class="text-3xl font-bold text-center mb-8">Your Cart</h1>
+      <div class="mt-4">
+        <form action="{{ url_for('checkout') }}" method="get">
+          <button type="submit" class="bg-black hover:bg-gray-700 text-white font-bold py-3 px-6 rounded block mx-auto">
+            Checkout
+          </button>
+        </form>
+      </div>
+    </aside>
+  </div>
 
-        <table class="w-full">
-          <thead>
-            <tr>
-              <th class="text-left">Item Name</th>
-              <th class="text-left">Quantity</th>
-              <th class="text-left">Price</th>
-              <th class="text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in cart_items %}
-            <tr class="border-b border-gray-200 py-2">
-              <td class="font-semibold">{{ item.name }}</td>
-              <td class="text-blue-500 font-bold">{{ item.quantity }}</td>
-              <td class="text-green-500">{{ item.price }}</td>
-              <td>
-                <form
-                  action="{{ url_for('remove_from_cart', name=item.name) }}"
-                  method="post"
-                >
-                  <button
-                    type="submit"
-                    class="text-red-500 font-bold py-1 px-3"
-                  >
-                    <i class="fi fi-rs-trash"></i>
-                  </button>
-                </form>
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td colspan="4" class="text-center text-gray-500 py-2">
-                Your cart is empty.
-              </td>
-            </tr>
-            {% endfor %}
-            <tr class="border-t border-gray-200 py-2">
-              <td colspan="2" class="font-bold text-xl">Total</td>
-              <td colspan="2" class="text-green-500 font-bold text-xl">
-                {{ total_price }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="mt-4">
-          <form action="{{ url_for('checkout') }}" method="get">
-            <button
-              type="submit"
-              class="bg-black hover:bg-gray-700 text-white font-bold py-3 px-6 rounded block mx-auto"
-            >
-              Checkout
-            </button>
-          </form>
-        </div>
-      </aside>
-    </div>
-
-    <script>
-      // Filter buttons
-      document.querySelectorAll(".filter-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          const filter = btn.getAttribute("data-filter");
-          // Implement your filtering logic here
-        });
+  <script>
+    // Filter buttons
+    document.querySelectorAll(".filter-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const filter = btn.getAttribute("data-filter");
+        // Implement your filtering logic here
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>

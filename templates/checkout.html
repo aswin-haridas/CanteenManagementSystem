@@ -1,20 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>processing....</title>
+    <title>Checkout</title>
+    <style>
+        /* Add your styles here */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .print-button {
+            margin-top: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-        <img src="https://cdn.dribbble.com/users/447957/screenshots/6899626/payment-animation.gif" alt="payment-animation" style="max-width: 100%; max-height: 100%;">
-    </div>
+    <h1>Checkout</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item['name'] }}</td>
+                <td>{{ item['price'] }}</td>
+                <td>{{ item['quantity'] }}</td>
+                <td>{{ item['price'] * item['quantity'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" style="text-align: right;">Total Price:</td>
+                <td>{{ total_price }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <p>Receipt Number: {{ receipt_number }}</p>
+
+    <button class="print-button" onclick="printReceipt()">Print Receipt</button>
+
+
+    <button><a href="{{ url_for('processing') }}">Checkout</a></button>
+
     <script>
-        setTimeout(() => {
-            window.location.assign("{{ url_for('home') }}");
-        }, 5000);
+        function printReceipt() {
+            window.print();
+        }
     </script>
-    
-    
+
 </body>
+
 </html>
