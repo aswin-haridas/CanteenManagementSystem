@@ -1,101 +1,237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>StudentSpace</title>
-  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin</title>
 </head>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+  }
 
-<body class="bg-gray-100 font-sans p-4"> <!-- Added padding to the body -->
-  <div class="StudentSpace">
-    <div class="main-section">
-      <!-- remind -->
-      <div id="popup" class="popup">
-        <form class="userform">
-          <label for="text" class="text-lg font-bold text-gray-800">Editing for {{username}}</label>
-          <br><br>
-          <label for="username" class="text-sm text-gray-700">Username:</label>
-          <input type="text" id="username" name="username" class="border border-gray-300 rounded-md p-2" />
-          <br><br>
-          <label for="password" class="text-sm text-gray-700">Password:</label>
-          <input type="password" id="password" name="password" class="border border-gray-300 rounded-md p-2" />
-          <br><br>
-          <label for="role" class="text-sm text-gray-700">User Type:</label>
-          <select id="role" name="role" class="border border-gray-300 rounded-md p-2">
-            <option value="admin">Admin</option>
-            <option value="faculty">Manager</option>
-            <option value="student">Customer</option>
-          </select>
-          <label for="score" class="text-sm text-gray-700">Score:</label>
-          <input type="number" id="score" name="score" class="border border-gray-300 rounded-md p-2" />
-          <div class="button-container">
-            <button type="button" id="cancelButton" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
-            <button type="button" id="okButton" class="bg-green-500 text-white px-4 py-2 rounded">OK</button>
-          </div>
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 60%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  /* Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Black with opacity */
+    backdrop-filter: blur(8px);
+    /* Apply blur effect */
+    z-index: 1000;
+    /* Ensure it's on top */
+    display: none;
+    /* Hidden by default */
+  }
+
+  /* Modal Content */
+  .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    /* Ensure it's on top of the overlay */
+  }
+
+  /* Close Button */
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+
+  /* Show the modal when active */
+  .modal.active {
+    display: block;
+  }
+</style>
+
+<body>
+  <h1>Orders</h1>
+  <table>
+    <tr>
+      <th>Order ID</th>
+      <th>Item Name</th>
+      <th>Price</th>
+      <th>Customer Name</th>
+      <th>customer score</th>
+      <th>Quantity</th>
+      <th>Actions</th>
+    </tr>
+    {% for order in orders %}
+    <tr>
+      <td>{{ order[0] }}</td>
+      <td>{{ order[1] }}</td>
+      <td>{{ order[2] }}</td>
+      <td>{{ order[3] }}</td>
+      <td>{{ order[5] }}</td>
+      <td>{{ order[4] }}</td>
+      <td>
+        <form action="/accept_order" method="post">
+          <input type="hidden" name="order_id" value="{{ order[0] }}">
+          <button type="submit">Accept</button>
         </form>
-      </div>
+        <form action="/cancel_order" method="post">
+          <input type="hidden" name="order_id" value="{{ order[0] }}">
+          <button type="submit">Cancel</button>
+        </form>
+        <form action="/served_order" method="post">
+          <input type="hidden" name="order_id" value="{{ order[0] }}">
+          <button type="submit">Served</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
 
-      <div class="main">
-        <table class="w-full bg-white shadow-md rounded-lg">
-          <thead>
-            <tr>
-              <th class="px-4 py-2">ID</th>
-              <th class="px-4 py-2">Username</th>
-              <th class="px-4 py-2">Password</th>
-              <th class="px-4 py-2">User Type</th>
-              <th class="px-4 py-2">Score</th>
-              <th class="px-4 py-2"></th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody">
-            {% for user in users_data %}
-            <tr>
-              <td class="px-4 py-2">{{ user[0] }}</td>
-              <td class="px-4 py-2">{{ user[1] }}</td>
-              <td class="px-4 py-2">{{ user[2] }}</td>
-              <td class="px-4 py-2">{{ user[3] }}</td>
-              <td class="px-4 py-2">{{ user[4] }}</td>
-              <td class="px-4 py-2">
-                <a href="#" class="edit-link">
-                  <img style="width: 15px" src="{{ editimage }}" alt="Edit Icon" />
-                </a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <h1>Menu</h1>
+  <table>
+    <tr>
+      <th>Item ID</th>
+      <th>Item Name</th>
+      <th>Price</th>
+      <th>Image URL</th>
+      <th>Availability</th>
+      <th>Food Type</th>
+      <th>Actions</th>
+    </tr>
+    {% for item in menu %}
+    <tr>
+      <td>{{ item[0] }}</td>
+      <td>{{ item[1] }}</td>
+      <td>{{ item[2] }}</td>
+      <td>{{ item[3] }}</td>
+      <td>{{ item[4] }}</td>
+      <td>{{ item[5] }}</td>
+      <td>
+        <button type="button"
+          onclick="openEditModal('{{ item[0] }}', '{{ item[1] }}', '{{ item[2] }}', '{{ item[3] }}', '{{ item[4] }}', '{{ item[5] }}')">Edit</button>
+        <form action="/delete_item" method="post">
+          <input type="hidden" name="item_id" value="{{ item[0] }}">
+          <button type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h1>Report</h1>
+  <table>
+    <tr>
+      <th>Order ID</th>
+      <th>Item Name</th>
+      <th>Price</th>
+      <th>Customer Name</th>
+      <th>Quantity</th>
+      <th>timestamp</th>
+      <th>Reciept Number</th>
+    </tr>
+    {% for report in reports %}
+    <tr>
+      <td>{{ report[0] }}</td>
+      <td>{{ report[1] }}</td>
+      <td>{{ report[2] }}</td>
+      <td>{{ report[3] }}</td>
+      <td>{{ report[5] }}</td>
+      <td>{{ report[4] }}</td>
+      <td>{{ report[6] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div class="modal-overlay">
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edit Item</h2>
+        <form id="editForm" action="/edit_item" method="post">
+          <input type="hidden" id="editItemId" name="item_id">
+
+          <label for="editItemName">Item Name:</label>
+          <input type="text" id="editItemName" name="item_name" style="display: block; margin-bottom: 10px;">
+
+          <label for="editItemPrice">Price:</label>
+          <input type="text" id="editItemPrice" name="item_price" style="display: block; margin-bottom: 10px;">
+
+          <label for="editItemImage">Image URL:</label>
+          <input type="text" id="editItemImage" name="item_image" style="display: block; margin-bottom: 10px;">
+
+          <label for="editItemAvailability">Availability:</label>
+          <select id="editItemAvailability" name="item_availability" style="display: block; margin-bottom: 10px">
+            <option value="Available">Available</option>
+            <option value="Out OF Stock">Out Of Order</option>
+          </select>
+
+
+          <label for="editItemFoodType">Food Type:</label>
+          <input type="text" id="editItemFoodType" name="item_food_type" style="display: block; margin-bottom: 10px;">
+
+          <button type="submit" style="display: block; margin: auto;">
+            Save
+          </button>
+        </form>
       </div>
     </div>
   </div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var popup = document.getElementById("popup");
-      var editLinks = document.querySelectorAll(".edit-link");
-      var cancelButton = document.getElementById("cancelButton");
-      var okButton = document.getElementById("okButton");
-      var mainSection = document.querySelector(".main");
-      var userForm = document.querySelector(".userform"); // Select the form
+    function openEditModal(itemId, itemName, itemPrice, itemImage, itemAvailability, itemFoodType) {
+      document.getElementById('editItemId').value = itemId;
+      document.getElementById('editItemName').value = itemName;
+      document.getElementById('editItemPrice').value = itemPrice;
+      document.getElementById('editItemImage').value = itemImage;
+      document.getElementById('editItemAvailability').value = itemAvailability;
+      document.getElementById('editItemFoodType').value = itemFoodType;
 
-      editLinks.forEach(function (editLink) {
-        editLink.addEventListener("click", function (event) {
-          event.preventDefault();
-          popup.style.display = "block";
-          mainSection.classList.add("popup-active");
-          mainSection.style.filter = "blur(5px)"; // Apply blur to the main section
-          userForm.style.display = "block"; // Show the form
-        });
-      });
+      // Show the modal
+      document.querySelector('.modal-overlay').style.display = 'block';
+      document.querySelector('#editModal').classList.add('active');
+    }
 
-      function closePopup() {
-        popup.style.display = "none";
-        mainSection.classList.remove("popup-active");
-        mainSection.style.filter = "none"; // Remove blur from the main section
-        userForm.style.display = "none"; // Hide the form
-      }
-
-      cancelButton.addEventListener("click", closePopup);
-      okButton.addEventListener("click", closePopup);
+    // Close the modal
+    document.querySelector('.close').addEventListener('click', function () {
+      document.querySelector('.modal-overlay').style.display = 'none';
+      document.querySelector('#editModal').classList.remove('active');
     });
   </script>
+
 </body>
 
 </html>

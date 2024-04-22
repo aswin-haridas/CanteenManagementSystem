@@ -31,7 +31,7 @@ def student_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-#login.html----------------------------------------------------------------------------------------------------
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
@@ -58,7 +58,7 @@ def login():
             return render_template('error.html')
     return render_template('login.html')
 
-#signup.html----------------------------------------------------------------------------------------
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -69,11 +69,11 @@ def signup():
         conn.close()
     return redirect(url_for('login'))
 
-#home.html----------------------------------------------------------------------------------------
+
 
 @app.route('/home',methods=['GET', 'POST'])
 def home():
-    #connected to canteen database instead
+    
     conn = sqlite3.connect('canteen.db')
     conn.row_factory = sqlite3.Row
     menu_cursor = conn.execute('SELECT * FROM Menu')
@@ -135,10 +135,10 @@ def checkout():
     total_price = 0
     for item in cart_items:
         total_price += item['price'] * item['quantity']
-    # Generate a random receipt number
+    
     receipt_number = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
-    #copy Cart to Orders and clear Cart
+    
     for cart_item in cart_items:
         conn.execute(
             'INSERT INTO Orders (id, name, price, quantity, ordered_by, customer_score, status, receipt_number) VALUES (?, ?, ?, ?, ?, ?, "ordered", ?)',
@@ -158,7 +158,7 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
-#profile.html----------------------------------------------------------------------------------------
+
 @app.route("/profile")
 def profile():
     username = session.get("user_name")
@@ -202,7 +202,7 @@ def profile():
     pfp=user_info["pfp"]
 )
 
-#orders.html----------------------------------------------------------------------------------------
+
 @app.route('/orders', methods=['GET'])
 def Orders():
     if 'logged_in' not in session:
@@ -211,7 +211,7 @@ def Orders():
     user_name = session.get('user_name')
 
     conn = canteen_db()
-    orders = conn.execute('SELECT * FROM Cart WHERE ordered_by = ?', (user_name,)).fetchall()
+    orders = conn.execute('SELECT * FROM Orders WHERE ordered_by = ?', (user_name,)).fetchall()
     conn.close()
 
     return render_template('orders.html', orders=orders)
@@ -226,8 +226,6 @@ def delete_order():
     return redirect('/orders')
 
 
-#usermgmt.html----------------------------------------------------------------------------------------
-
 @app.route('/usermgmt')
 def usermgmt():
     conn = student_db()
@@ -236,8 +234,6 @@ def usermgmt():
     return render_template('usermgmt.html' , users_data=users_data)
     
 
-
-#canteenmanager.html----------------------------------------------------------------------------------------
 @app.route('/manager')
 def manager():
     with canteen_db() as conn:
@@ -245,7 +241,6 @@ def manager():
         orders = conn.execute('SELECT * FROM Cart').fetchall()
         reports = conn.execute('SELECT * FROM Reports').fetchall()
     return render_template('cmanager.html', menu=menu, orders=orders , reports=reports)
-
 
 @app.route('/accept_order', methods=['POST'])
 def accept_order():
