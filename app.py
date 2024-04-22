@@ -162,45 +162,43 @@ def logout():
 @app.route("/profile")
 def profile():
     username = session.get("user_name")
-    if username is None:
+    if not username:
         return abort(404)
 
     conn = student_db()
     cursor = conn.cursor()
-
     cursor.execute("SELECT * FROM students WHERE University_Reg_No=?", (username,))
     user_info = cursor.fetchone()
     conn.close()
 
-    if user_info is None:
+    if not user_info:
         return abort(404)
 
     return render_template(
-    "profile.html",
-    user_id=user_info["Student_ID"],
-    admission_no=user_info["Admission_No"],
-    Sl_No=user_info["Sl_No"],
-    Roll_No=user_info["Roll_No"],
-    Admission_No=user_info["Admission_No"],
-    University_Reg_No=user_info["University_Reg_No"],
-    Student_ID=user_info["Student_ID"],
-    User_Name=user_info["User_Name"],
-    Department=user_info["Department"],
-    Batch=user_info["Batch"],
-    Primary_Email_ID=user_info["Primary_Email_ID"],
-    Gender=user_info["Gender"],
-    Date_of_Birth=user_info["Date_of_Birth"],
-    Birth_Place=user_info["Birth_Place"],
-    State=user_info["State"],
-    Admission_Date=user_info["Admission_Date"],
-    Current_Address=user_info["Current_Address"],
-    Permenant_Address=user_info["Permenant_Address"],
-    Student_Phone=user_info["Student_Phone"],
-    Parent_Phone=user_info["Parent_Phone"],
-    Religion=user_info["Religion"],
-    Caste=user_info["Caste"],
-    pfp=user_info["pfp"]
-)
+        "profile.html",
+        student_id=user_info["Student_ID"],
+        admission_no=user_info["Admission_No"],
+        sl_no=user_info["Sl_No"],
+        roll_no=user_info["Roll_No"],
+        admission_number=user_info["Admission_No"],
+        university_reg_no=user_info["University_Reg_No"],
+        department=user_info["Department"],
+        batch=user_info["Batch"],
+        primary_email_id=user_info["Primary_Email_ID"],
+        gender=user_info["Gender"],
+        date_of_birth=user_info["Date_of_Birth"],
+        birth_place=user_info["Birth_Place"],
+        state=user_info["State"],
+        admission_date=user_info["Admission_Date"],
+        current_address=user_info["Current_Address"],
+        permanent_address=user_info["Permenant_Address"],
+        student_phone=user_info["Student_Phone"],
+        parent_phone=user_info["Parent_Phone"],
+        religion=user_info["Religion"],
+        caste=user_info["Caste"],
+        pfp=user_info["pfp"]
+    )
+
 
 
 @app.route('/orders', methods=['GET'])
