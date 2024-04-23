@@ -239,8 +239,8 @@ def edit_user():
     password = request.form.get('password')
     role = request.form.get('role')
     score = request.form.get('score')
-    with canteen_db() as conn:
-        conn.execute('UPDATE users SET username = ?, password = ?, role = ? score = ? WHERE id = ?', (username, password, role, user_id, score))
+    with student_db() as conn:
+        conn.execute('UPDATE users SET username = ?, password = ?, role = ? ,score = ? WHERE id = ?', (username, password, role, score, user_id))
         conn.commit()
     return redirect('/usermgmt')
 

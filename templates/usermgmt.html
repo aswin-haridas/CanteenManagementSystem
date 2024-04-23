@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   <title>User Management</title>
 </head>
 <style>
@@ -93,48 +95,66 @@
       <td>{{ user[3] }}</td>
       <td>{{ user[4] }}</td>
       <td>
-        <button type="button"
-          onclick="openEditUserModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}', '{{ user[4] }}')">Edit</button>
-        <form action="/delete_user" method="post">
-          <input type="hidden" name="user_id" value="{{ user[0] }}">
-          <button type="submit">Delete</button>
-        </form>
+        <div class="flex space-x-4">
+          <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" type="button"
+            onclick="openEditUserModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}', '{{ user[4] }}')">Edit</button>
+          <form action="/delete_user" method="post">
+            <input type="hidden" name="user_id" value="{{ user[0] }}">
+            <button class="bg-green-400 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              type="submit">Delete</button>
+          </form>
+        </div>
       </td>
     </tr>
     {% endfor %}
   </table>
-  <div class="modal-overlay">
-    <div id="editUserModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Edit User</h2>
-        <form id="editUserForm" action="/edit_user" method="post">
+  <div class="modal-overlay fixed inset-0 z-50 overflow-auto bg-smoke-dark flex">
+    <div id="editUserModal" class="modal m-auto w-11/12 md:w-1/2 lg:w-1/3 shadow-lg">
+      <div class="modal-content py-4 text-left px-6">
+        <span class="close cursor-pointer absolute top-0 right-0 p-4">&times;</span>
+        <h2 class="text-2xl font-bold mb-4">Edit User</h2>
+        <form id="editUserForm" class="mt-4" action="/edit_user" method="post">
           <input type="hidden" id="editUserId" name="user_id">
-          <label for="editUsername">Username:</label>
-          <input type="text" id="editUsername" name="username" style="display: block; margin-bottom: 10px;">
-          <label for="editPassword">Password:</label>
-          <input type="password" id="editPassword" name="password" style="display: block; margin-bottom: 10px;">
-          <label for="editRole">Role:</label>
-          <select id="editRole" name="role" style="display: block; margin-bottom: 10px;">
-            <option value="Admin">Admin</option>
-            <option value="User">User</option>
-          </select>
-          <label for="editScore">Score:</label>
-          <input type="text" id="editScore" name="score" style="display: block; margin-bottom: 10px;">
-          <button type="submit" style="display: block; margin: auto;">
-            Save
-          </button>
+          <div class="mb-4">
+            <label for="editUsername" class="block text-gray-700 text-sm font-bold mb-2">Username:</label>
+            <input type="text" id="editUsername" name="username"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div class="mb-4">
+            <label for="editPassword" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
+            <input type="password" id="editPassword" name="password"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div class="mb-4">
+            <label for="editRole" class="block text-gray-700 text-sm font-bold mb-2">Role:</label>
+            <select id="editRole" name="role"
+              class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <option value="customer">Customer</option>
+              <option value="manager">Canteen Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="editScore" class="block text-gray-700 text-sm font-bold mb-2">Score:</label>
+            <input type="number" id="editScore" name="score"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div class="flex items-center justify-end">
+            <button type="submit"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Save</button>
+          </div>
         </form>
       </div>
     </div>
   </div>
+
   <script>
-    function openEditUserModal(userId, username, score, password, role) {
+    function openEditUserModal(userId, username, password, role, score) {
       document.getElementById('editUserId').value = userId;
       document.getElementById('editUsername').value = username;
-      document.getElementById('editScore').value = score;
       document.getElementById('editPassword').value = password;
       document.getElementById('editRole').value = role;
+      document.getElementById('editScore').value = score;
       document.querySelector('.modal-overlay').style.display = 'block';
       document.querySelector('#editUserModal').classList.add('active');
     }
