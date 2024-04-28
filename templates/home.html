@@ -13,11 +13,27 @@
   <link rel="stylesheet"
     href="https://cdn-uicons.flaticon.com/2.2.0/uicons-regular-straight/css/uicons-regular-straight.css" />
 </head>
+
 <style>
   body {
     font-family: "Inter", sans-serif;
   }
-</style>
+
+  .filter-btn {
+    background-color: #fff27e;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  .filter-btn:hover {
+    background-color: #ff9035;
+  }
+
+  .filter-btn.active {
+    background-color: #ff7f07;
+    border: #ff7f07 2px solid;
+  }
+  </style>
 
 <body class="font-inter bg-white">
   <nav class="bg-white py-4 shadow-md">
@@ -37,25 +53,18 @@
   <div class="flex mt-8">
     <section class="w-6/10 p-8">
       <div class="mb-4 flex space-x-2">
-        <button type="button"
-          class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-          Veg
-        </button>
-        <button type="button"
-          class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-          Drinks
-        </button>
-        <button type="button"
-          class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-          Snacks
-        </button>
+        <button class="filter-btn" onclick="filterMenu('all')">All</button>
+        <button class="filter-btn" onclick="filterMenu('veg')">Veg</button>
+        <button class="filter-btn" onclick="filterMenu('snacks')">Snacks</button>
+        <button class="filter-btn" onclick="filterMenu('drinks')">Drinks</button>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
         {% for item in menu_items %}
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="menu-item rounded-lg shadow-lg overflow-hidden" data-category="{{ item.foodtype }}">
           <img class="w-full h-32 object-cover" src="{{ item.image_url }}" alt="{{ item.name }} Image" />
           <div class="p-4">
             <h3 class="text-xl font-semibold mb-2">{{ item.name }}</h3>
+            <p class="text-gray-600 mb-3">Category: {{ item.foodtype }}</p>
             <p class="text-gray-600 mb-3">Price: {{ item.price }}</p>
             {% if item.availability != "available" %}
             <p class="text-gray-400">OUT OF ORDER</p>
@@ -71,7 +80,6 @@
         </div>
         {% endfor %}
       </div>
-
     </section>
 
     <aside class="w-4/10 p-8 bg-white shadow-md rounded-lg">
@@ -127,12 +135,29 @@
   </div>
 
   <script>
-    document.querySelectorAll(".filter-btn").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        const filter = btn.getAttribute("data-filter");
+    function filterMenu(category) {
+      const menuItems = document.querySelectorAll('.menu-item');
+      menuItems.forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+    //make the clicked button active and others inactive
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(btn => {
+          btn.classList.remove('active');
+        });
+        btn.classList.add('active');
       });
     });
+
   </script>
+
 </body>
 
 </html>
