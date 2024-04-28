@@ -1,11 +1,18 @@
 from datetime import datetime, timedelta
+import time
 from flask import Flask, abort, render_template, request, redirect, session, url_for
 import sqlite3
-from models import canteen_db, student_db
 from helpers import generate_receipt_number
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
-
+def canteen_db():
+    conn = sqlite3.connect('canteen.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+def student_db():
+    conn = sqlite3.connect('student.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 @app.context_processor
 def common_icons():
     admin = "/static/assets/admin.png"
@@ -13,7 +20,6 @@ def common_icons():
     manager = "/static/assets/manager.png"
     editimage = "/static/assets/edit.png"
     return dict(admin=admin, manager=manager, customer=customer, editimage=editimage)
-
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -39,7 +45,6 @@ def login():
         else:
             return render_template("error.html")
     return render_template("login.html")
-
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -61,7 +66,7 @@ def home():
     conn.row_factory = sqlite3.Row
     menu_cursor = conn.execute("SELECT * FROM Menu")
     menu_items = menu_cursor.fetchall()
-    cart_cursor = conn.execute('SELECT * FROM Cart WHERE status = "ordered"')
+    cart_cursor = conn.execute("SELECT * FROM Cart WHERE status = 'ordered'")
     cart_items = cart_cursor.fetchall()
     total_price = 0
     for item in cart_items:
@@ -130,18 +135,34 @@ def remove_from_cart(name):
     return redirect(url_for("home"), username=session.get("user_name"))
 @app.route("/checkout")
 def checkout():
+    time.sleep(2)
     with canteen_db() as conn:
         cart_items = conn.execute("SELECT * FROM Cart").fetchall()
-        total_price = 0
-        for item in cart_items:
-            total_price += item["price"] * item["quantity"]
+        total = sum(item["price"] * item["quantity"] for item in cart_items)
         receipt_number = generate_receipt_number()
+        #copy cart to orders
+        conn.executemany(
+            "INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    item["id"],
+                    item["name"],
+                    item["price"],
+                    item["quantity"],
+                    receipt_number,
+                    item["customer_score"],
+                    "ordered",
+                    item["pickup_time"]
+                )
+                for item in cart_items
+            ],
+        )
+        conn.execute("DELETE FROM Cart")
         conn.commit()
-        conn.close()
     return render_template(
         "checkout.html",
         cart_items=cart_items,
-        total_price=total_price,
+        total=total,
         receipt_number=receipt_number,
     )
 @app.route("/processing")
@@ -150,8 +171,8 @@ def processing():
 @app.route("/logout")
 def logout():
     session.clear()
+    time.sleep(2)
     return redirect(url_for("login"))
-
 @app.route("/profile")
 def profile():
     username = session.get("user_name")
@@ -192,10 +213,11 @@ def profile():
     )
 @app.route("/reducescore")
 def reducescore():
-    # Implement your logic to reduce score here
     with student_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],))
+        cursor.execute(
+            "SELECT score FROM users WHERE username=?", (session["user_name"],)
+        )
         user_score = cursor.fetchone()["score"]
         new_score = max(0, user_score - 1)
         conn.execute(
@@ -204,7 +226,6 @@ def reducescore():
         )
         conn.commit()
     return redirect(url_for("profile"))
-
 @app.route("/orders")
 def orders():
     if "logged_in" not in session:
@@ -215,7 +236,6 @@ def orders():
             "SELECT * FROM Cart WHERE ordered_by = ?", (user,)
         ).fetchall()
     return render_template("orders.html", orders=orders)
-
 @app.route("/edit_user", methods=["POST"])
 def edit_user():
     user_id = request.form.get("user_id")
@@ -265,8 +285,6 @@ def served_order():
             ),
         )
         conn.execute("UPDATE Cart SET status = ? WHERE id = ?", ("served", order_id))
-        conn.commit()
-        conn.execute("DELETE FROM Cart WHERE id = ?", (order_id,))
         conn.commit()
     return redirect("/manager")
 @app.route("/edit_item", methods=["POST"])

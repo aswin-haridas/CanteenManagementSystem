@@ -110,7 +110,7 @@
     <!-- Print button with Font Awesome icon -->
     <button class="print-button" onclick="printReceipt()"><i class="fas fa-print"></i> Print Receipt</button>
     <!-- Checkout button (hidden for demo) -->
-    <button class="checkout-button"><a style="text-decoration: none; color: white" href="{{ url_for('processing') }}">Checkout</a></button>
+    <a style="text-decoration: none; color: white" href="{{ url_for('processing') }}"><button class="checkout-button">Checkout</button></a>
   </div>
   <script>
     function printReceipt() {
