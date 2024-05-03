@@ -20,6 +20,7 @@ def common_icons():
     manager = "/static/assets/manager.png"
     editimage = "/static/assets/edit.png"
     return dict(admin=admin, manager=manager, customer=customer, editimage=editimage)
+
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -45,6 +46,7 @@ def login():
         else:
             return render_template("error.html")
     return render_template("login.html")
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -81,7 +83,7 @@ def home():
 @app.route("/add_to_cart/<int:menu_id>", methods=["POST"])
 def add_to_cart(menu_id):
     username = session.get("user_name")
-    pickup_time = datetime.now() + timedelta(seconds=20)  # Calculate pickup time
+    pickup_time = datetime.now() + timedelta(minutes=1)  # Calculate pickup time
     db = student_db()
     cursor = db.cursor()
     cursor.execute("SELECT score FROM users WHERE username = ?", (username,))
@@ -173,17 +175,16 @@ def logout():
     session.clear()
     time.sleep(2)
     return redirect(url_for("login"))
+
 @app.route("/profile")
 def profile():
     username = session.get("user_name")
-    print(username)
     if not username:
         return abort(404)
     with student_db() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM students WHERE University_Reg_No=?", (username,))
         user_info = cursor.fetchone()
-        conn.close()
         if not user_info:
             return abort(404)
     return render_template(
