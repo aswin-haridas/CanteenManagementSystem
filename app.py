@@ -2,17 +2,10 @@ from datetime import datetime, timedelta
 import time
 from flask import Flask, abort, render_template, request, redirect, session, url_for
 import sqlite3
-from helpers import generate_receipt_number
+from helpers import generate_receipt_number as generate_receipt_number , canteen_db as canteen_db , student_db as student_db 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
-def canteen_db():
-    conn = sqlite3.connect('canteen.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-def student_db():
-    conn = sqlite3.connect('student.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+
 @app.context_processor
 def common_icons():
     admin = "/static/assets/admin.png"
@@ -141,9 +134,8 @@ def remove_from_cart(name):
 @app.route("/checkout")
 def checkout():
     time.sleep(2)
-    
-    pickup_time = datetime.now() + timedelta(minutes=1)
-    formatted_time = pickup_time.strftime("%M:%S")
+    timenow = datetime.now()+timedelta(minutes=3)
+    pickup_time = timenow.strftime("%H:%M:%S")
     with canteen_db() as conn:
         cart_items = conn.execute("SELECT * FROM Cart").fetchall()
         total = sum(item["price"] * item["quantity"] for item in cart_items)
@@ -157,7 +149,7 @@ def checkout():
                     item["quantity"],
                     item["ordered_by"],
                     item["customer_score"],
-                    formatted_time,
+                    pickup_time,
                     receipt_number
                 ),
             )
