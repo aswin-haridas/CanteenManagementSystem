@@ -113,12 +113,16 @@
     <a style="text-decoration: none; color: white" href="{{ url_for('processing') }}"><button class="checkout-button">Checkout</button></a>
   </div>
   <script>
-    function printReceipt() {
-      //hide the buttons
-      document.querySelector('.print-button').style.display = 'none';
-      document.querySelector('.checkout-button').style.display = 'none';
-      window.print();
-    }
+      function printReceipt() {
+        document.querySelector(".print-button").style.display = "none";
+        document.querySelector(".checkout-button").style.display = "none";
+        window.print();
+
+        setTimeout(function () {
+          document.querySelector(".print-button").style.display = "";
+          document.querySelector(".checkout-button").style.display = "";
+        }, 3000);
+      }
   </script>
 </body>
 </html>
