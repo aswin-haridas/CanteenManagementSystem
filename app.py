@@ -83,7 +83,8 @@ def home():
 @app.route("/add_to_cart/<int:menu_id>", methods=["POST"])
 def add_to_cart(menu_id):
     username = session.get("user_name")
-    pickup_time = datetime.now() + timedelta(minutes=1)  # Calculate pickup time
+    pickup_time = "03:00"
+
     db = student_db()
     cursor = db.cursor()
     cursor.execute("SELECT score FROM users WHERE username = ?", (username,))
@@ -118,6 +119,7 @@ def add_to_cart(menu_id):
             )
             conn.commit()
     return redirect(url_for("home"))
+
 @app.route("/remove_from_cart/<string:name>", methods=["POST"])
 def remove_from_cart(name):
     with canteen_db() as conn:
@@ -135,29 +137,30 @@ def remove_from_cart(name):
             conn.commit()
         conn.close()
     return redirect(url_for("home"), username=session.get("user_name"))
+
 @app.route("/checkout")
 def checkout():
     time.sleep(2)
+    
+    pickup_time = datetime.now() + timedelta(minutes=1)
+    formatted_time = pickup_time.strftime("%M:%S")
     with canteen_db() as conn:
         cart_items = conn.execute("SELECT * FROM Cart").fetchall()
         total = sum(item["price"] * item["quantity"] for item in cart_items)
         receipt_number = generate_receipt_number()
-        #copy cart to orders
-        conn.executemany(
-            "INSERT INTO Orders (name, price, quantity, receipt_number, customer_score, status, pickup_time) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [
+        for item in cart_items:
+            conn.execute(
+                "INSERT INTO Orders (name, price, quantity, ordered_by, customer_score, status, pickup_time,receipt_number) VALUES (?, ?, ?, ?, ?, 'ordered', ?,?)",
                 (
                     item["name"],
                     item["price"],
                     item["quantity"],
-                    receipt_number,
+                    item["ordered_by"],
                     item["customer_score"],
-                    "ordered",
-                    item["pickup_time"]
-                )
-                for item in cart_items
-            ],
-        )
+                    formatted_time,
+                    receipt_number
+                ),
+            )
         conn.execute("DELETE FROM Cart")
         conn.commit()
     return render_template(
@@ -227,6 +230,7 @@ def reducescore():
         )
         conn.commit()
     return redirect(url_for("profile"))
+
 @app.route("/orders")
 def orders():
     if "logged_in" not in session:
@@ -234,7 +238,7 @@ def orders():
     user = session["user_name"]
     with canteen_db() as conn:
         orders = conn.execute(
-            "SELECT * FROM Cart WHERE ordered_by = ?", (user,)
+            "SELECT * FROM Orders "
         ).fetchall()
     return render_template("orders.html", orders=orders)
 

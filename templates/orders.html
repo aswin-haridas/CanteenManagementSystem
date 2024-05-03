@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100">
     <div class="container mx-auto p-8">
         <h1 class="text-2xl font-bold mb-4">Orders</h1>
@@ -17,7 +19,8 @@
                     <th class="bg-green-500 text-white px-4 py-2">Price</th>
                     <th class="bg-green-500 text-white px-4 py-2">Quantity</th>
                     <th class="bg-green-500 text-white px-4 py-2">Status</th>
-                    <th class="bg-green-500 text-white px-4 py-2">Pickup in</th>
+                    <th class="bg-green-500 text-white px-4 py-2">Pickup Before</th>
+                    <th class="bg-green-500 text-white px-4 py-2">ET</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,44 +31,12 @@
                     <td class="border px-4 py-2">{{ order.price }}</td>
                     <td class="border px-4 py-2">{{ order.quantity }}</td>
                     <td class="border px-4 py-2">{{ order.status }}</td>
-                    <td class="border px-4 py-2 timer"></td>
+                    <td class="border px-4 py-2">{{ order.pickup_time}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
-    <script>
-    function updateTimer() {
-        var orders = document.querySelectorAll(".order-row");
-        orders.forEach(function(order) {
-            var pickupTime = new Date(order.dataset.pickupTime);
-            var currentTime = new Date();
-            var remainingTime = Math.max(0, (pickupTime - currentTime) / 1000); // Remaining time in seconds
-            var minutes = Math.floor(remainingTime / 60);
-            var seconds = Math.floor(remainingTime % 60);
-            order.querySelector(".timer").innerText = minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
-            if (remainingTime <= 0) {
-            // Call reducescore() function for this order
-            $.ajax({
-              url: "/reducescore",
-              type: "POST",
-              data: {
-                order_id: orderId,
-              },
-              success: function (response) {
-                console.log(response);
-              },
-              error: function (error) {
-                console.log(error);
-              },
-            });
-            }
-        });
-    }
-
-    // Update timer every second
-    setInterval(updateTimer, 1000);
-    </script>
 </body>
+
 </html>
