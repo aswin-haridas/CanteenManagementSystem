@@ -144,10 +144,9 @@ def checkout():
         receipt_number = generate_receipt_number()
         #copy cart to orders
         conn.executemany(
-            "INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Orders (name, price, quantity, receipt_number, customer_score, status, pickup_time) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [
                 (
-                    item["id"],
                     item["name"],
                     item["price"],
                     item["quantity"],
@@ -167,6 +166,7 @@ def checkout():
         total=total,
         receipt_number=receipt_number,
     )
+
 @app.route("/processing")
 def processing():
     return render_template("processing.html")
@@ -237,6 +237,7 @@ def orders():
             "SELECT * FROM Cart WHERE ordered_by = ?", (user,)
         ).fetchall()
     return render_template("orders.html", orders=orders)
+
 @app.route("/edit_user", methods=["POST"])
 def edit_user():
     user_id = request.form.get("user_id")
