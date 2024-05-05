@@ -43,6 +43,7 @@ def login():
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
+    time.sleep(2)
     if request.method == "POST":
         username = request.form["university_reg_no"]
         password = request.form["password"]
