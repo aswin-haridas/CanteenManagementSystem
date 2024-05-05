@@ -47,7 +47,6 @@ def signup():
         conn = student_db()
         username = request.form["university_reg_no"]
         password = request.form["password"]
-        user_type = request.form["user-type"]
         student_id = request.form.get("student_id")
         admission_no = request.form.get("admission_no")
         roll_no = request.form.get("roll_no")
@@ -78,7 +77,7 @@ def signup():
         else:
             conn.execute(
                 "INSERT INTO users (username, password, role, score) VALUES (?, ?, ?, ?)",
-                (username, password, user_type, 0),
+                (username, password,"costumer",100)
             )
             conn.execute("INSERT INTO students VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
