@@ -45,7 +45,7 @@ def login():
 def signup():
     if request.method == "POST":
         conn = student_db()
-        username = request.form["username"]
+        username = request.form["university_reg_no"]
         password = request.form["password"]
         user_type = request.form["user-type"]
         student_id = request.form.get("student_id")
@@ -143,6 +143,7 @@ def home():
         cart_items=cart_items,
         total_price=total_price,
     )
+
 @app.route("/add_to_cart/<int:menu_id>", methods=["POST"])
 def add_to_cart(menu_id):
     username = session.get("user_name")
@@ -234,6 +235,7 @@ def checkout():
 @app.route("/processing")
 def processing():
     return render_template("processing.html")
+ 
 @app.route("/logout")
 def logout():
     session.clear()
@@ -277,7 +279,6 @@ def profile():
         pfp=user_info["pfp"],
         user_score=user_info["score"],
     )
-
 
 @app.route("/orders")
 def orders():
