@@ -44,7 +44,6 @@ def login():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        conn = student_db()
         username = request.form["university_reg_no"]
         password = request.form["password"]
         student_id = request.form.get("student_id")
@@ -67,47 +66,49 @@ def signup():
         permanent_address = request.form.get("permanent_address")
         religion = request.form.get("religion")
         caste = request.form.get("caste")
-        pfp = request.form.get("pfp")
-        # Process the form data, for example, store it in a database
-        cursor = conn.execute("SELECT * FROM users WHERE username = ?", (username,))
-        existing_user = cursor.fetchone()
-        
-        if existing_user:
-            return render_template("error.html", error="Username already exists. Please choose a different username.")
-        else:
-            conn.execute(
-                "INSERT INTO users (username, password, role, score) VALUES (?, ?, ?, ?)",
-                (username, password,"costumer",100)
-            )
-            conn.execute("INSERT INTO students VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    username,
-                    student_id,
-                    admission_no,
-                    roll_no,
-                    student_name,
-                    admission_number,
-                    university_reg_no,
-                    department,
-                    batch,
-                    primary_email_id,
-                    student_phone,
-                    parent_phone,
-                    gender,
-                    date_of_birth,
-                    birth_place,
-                    state,
-                    admission_date,
-                    current_address,
-                    permanent_address,
-                    religion,
-                    caste,  
-                    pfp
-                ))
-            conn.commit()
-            conn.close()
-            return redirect(url_for("login"))
+
+        with student_db() as conn:
+            cursor = conn.execute("SELECT * FROM users WHERE username = ?", (username,))
+            existing_user = cursor.fetchone()
+
+            if existing_user:
+                return render_template("error.html", error="Username already exists. Please choose a different username.")
+            else:
+                conn.execute(
+                    "INSERT INTO users (username, password, role, score) VALUES (?, ?, ?, ?)",
+                    (username, password, "customer", 100)
+                )
+
+                conn.execute(
+                    "INSERT INTO students VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        username,
+                        student_id,
+                        admission_no,
+                        roll_no,
+                        student_name,
+                        admission_number,
+                        university_reg_no,
+                        department,
+                        batch,
+                        primary_email_id,
+                        student_phone,
+                        parent_phone,
+                        gender,
+                        date_of_birth,
+                        birth_place,
+                        state,
+                        admission_date,
+                        current_address,
+                        permanent_address,
+                        religion,
+                        caste
+                    )
+                )
+                conn.commit()
+                return redirect(url_for("login"))
     return render_template("signup.html")
+
 
 @app.route("/finepayment", methods=["GET", "POST"])
 def finepayment():
