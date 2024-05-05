@@ -2,80 +2,83 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Orders</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          var pickupTimeCells = document.querySelectorAll(".pickup-time");
-          pickupTimeCells.forEach(function (cell) {
-            var pickupTimeString = cell.textContent;
-            var pickupTimeParts = pickupTimeString.split(":");
-            var pickupTime = new Date();
-            pickupTime.setHours(parseInt(pickupTimeParts[0]));
-            pickupTime.setMinutes(parseInt(pickupTimeParts[1]));
-            pickupTime.setSeconds(parseInt(pickupTimeParts[2]));
-            var currentTime = new Date();
-            var timeDiff = pickupTime.getTime() - currentTime.getTime();
-            var totalSecondsDiff = Math.floor(timeDiff / 1000);
-      
-            if (totalSecondsDiff <= 0) {
-              cell.textContent = "timeout";
-              cell.style.color = "red";
-              // 
-            } else {
-              const hours = Math.floor(totalSecondsDiff / 3600);
-              totalSecondsDiff = totalSecondsDiff % 3600;
-              const mins = Math.floor(totalSecondsDiff / 60);
-              const seconds = totalSecondsDiff % 60;
-              cell.textContent =
-                hours +
-                ":" +
-                mins.toString().padStart(2, "0") +
-                ":" +
-                seconds.toString().padStart(2, "0");
-            }
-          });
-        });
-      
-        //refresh page in 2 seconds
-        setInterval(function () {
-          location.reload();
-        }, 2000);
-      </script>
-      
+  <title>Orders</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var pickupTimeCells = document.querySelectorAll(".pickup-time");
+      pickupTimeCells.forEach(function (cell) {
+        var pickupTimeString = cell.textContent;
+        var pickupTimeParts = pickupTimeString.split(":");
+        var pickupTime = new Date();
+        pickupTime.setHours(parseInt(pickupTimeParts[0]));
+        pickupTime.setMinutes(parseInt(pickupTimeParts[1]));
+        pickupTime.setSeconds(parseInt(pickupTimeParts[2]));
+        var currentTime = new Date();
+        var timeDiff = pickupTime.getTime() - currentTime.getTime();
+        var totalSecondsDiff = Math.floor(timeDiff / 1000);
+
+        if (totalSecondsDiff <= 0) {
+          cell.textContent = "timeout";
+          cell.style.color = "red";
+        } else {
+          const hours = Math.floor(totalSecondsDiff / 3600);
+          totalSecondsDiff = totalSecondsDiff % 3600;
+          const mins = Math.floor(totalSecondsDiff / 60);
+          const seconds = totalSecondsDiff % 60;
+          cell.textContent =
+            hours +
+            ":" +
+            mins.toString().padStart(2, "0") +
+            ":" +
+            seconds.toString().padStart(2, "0");
+        }
+      });
+    });
+    setInterval(function () {
+      location.reload();
+    }, 2000);
+  </script>
+
 </head>
 
 <body class="bg-gray-100">
-    <div class="container mx-auto p-8">
-        <h1 class="text-2xl font-bold mb-4">Orders</h1>
-        <table class="min-w-full bg-white border-collapse border border-gray-300">
-            <thead>
-                <tr>
-                    <th class="bg-green-500 text-white px-4 py-2">Order ID</th>
-                    <th class="bg-green-500 text-white px-4 py-2">Item Name</th>
-                    <th class="bg-green-500 text-white px-4 py-2">Price</th>
-                    <th class="bg-green-500 text-white px-4 py-2">Quantity</th>
-                    <th class="bg-green-500 text-white px-4 py-2">Status</th>
-                    <th class="bg-green-500 text-white px-4 py-2">Pickup Before</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr class="order-row" data-pickup-time="{{ order.pickup_time }}">
-                    <td class="border px-4 py-2">{{ order.id }}</td>
-                    <td class="border px-4 py-2">{{ order.name }}</td>
-                    <td class="border px-4 py-2">{{ order.price }}</td>
-                    <td class="border px-4 py-2">{{ order.quantity }}</td>
-                    <td class="border px-4 py-2">{{ order.status }}</td>
-                    <td class="border px-4 py-2 pickup-time">{{ order.pickup_time}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <div class="container mx-auto p-8">
+    <h1 class="text-2xl font-bold mb-4">Orders</h1>
+    <table class="min-w-full bg-white border-collapse border border-gray-300">
+      <thead>
+        <tr>
+          <th class="bg-green-500 text-white px-4 py-2">Order ID</th>
+          <th class="bg-green-500 text-white px-4 py-2">Item Name</th>
+          <th class="bg-green-500 text-white px-4 py-2">Price</th>
+          <th class="bg-green-500 text-white px-4 py-2">Quantity</th>
+          <th class="bg-green-500 text-white px-4 py-2">Status</th>
+          <th class="bg-green-500 text-white px-4 py-2">Pickup Before</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr class="order-row" data-pickup-time="{{ order.pickup_time }}">
+          <td class="border px-4 py-2">{{ order.id }}</td>
+          <td class="border px-4 py-2">{{ order.name }}</td>
+          <td class="border px-4 py-2">{{ order.price }}</td>
+          <td class="border px-4 py-2">{{ order.quantity }}</td>
+          <td class="border px-4 py-2">{{ order.status }}</td>
+          <td class="border px-4 py-2 pickup-time">{{ order.pickup_time}}</td>
+          <td class="border px-4 py-2">
+            <form action="/cancel_order" method="post">
+              <input type="hidden" name="order_id" value="{{ order.id }}">
+              <button type="submit">Accept</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </body>
 
 </html>

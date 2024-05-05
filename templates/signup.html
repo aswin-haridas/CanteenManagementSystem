@@ -1,52 +1,51 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Signup Page</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <link
-      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup Page</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
+    rel="stylesheet" />
   <style>
     body {
       margin: 0;
       padding: 0;
+      font-family: "Poppins", sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      font-family: "Poppins", sans-serif;
     }
 
     .signup-box {
-      width: 400px;
+      width: 500px;
       padding: 40px;
       text-align: center;
+      border: 2px solid #ccc;
+      border-radius: 8px;
     }
 
-    p {
+    .input-container {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
       font-weight: 600;
-      font-size: 22px;
-      margin-right: 15px;
+      font-size: 16px;
+      margin-bottom: 8px;
+      display: block;
     }
 
     input[type="text"],
     input[type="password"] {
       padding: 10px;
-      margin-bottom: 20px;
       width: 100%;
-      border: 2px solid #000;
+      border: 2px solid #ccc;
       border-radius: 4px;
       font-size: 16px;
-      font-family: "Poppins", sans-serif;
       box-sizing: border-box;
     }
 
@@ -60,70 +59,176 @@
       font-family: "Poppins", sans-serif;
       cursor: pointer;
     }
-
-    .select {
-      padding: 10px;
-      margin-bottom: 20px;
-      width: 100%;
-      border: 2px solid #000;
-      border-radius: 4px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    #user-image {
-      height: 50px;
-      width: 50px;
-    }
   </style>
-  <body>
-    <div class="signup-box">
-      <div
-        style="
-          padding-bottom: 28px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        "
-      >
-        <p>Signup as</p>
-        <img id="user-image" src="{{customer}}" alt="Student Image" />
-      </div>
-      <form method="POST" action="/signup">
-        <select
-          name="user-type"
-          class="select"
-          onchange="updateImage(this.value)"
-        >
-          <option value="customer">Customer</option>
-          <option value="manager">Canteen Manager</option>
-          <option value="admin">Admin</option>
-        </select>
-        <input type="text" name="username" placeholder="Username" required />
-        <br />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-        />
-        <br />
-        <input type="submit" value="Signup" />
-      </form>
-    </div>
-    <script>
-      function updateImage(userType) {
-        const image = document.getElementById("user-image");
-        if (userType === "customer") {
-          image.src = "{{customer}}";
-        } else if (userType === "manager") {
-          image.src = "{{manager}}";
-        } else if (userType === "admin") {
-          image.src = "{{admin}}";
-        } else {
-          image.src = "../images/placeholder.png";
-        }
-      }
-    </script>
-  </body>
-</html>
+</head>
+
+<body>
+  <div class="signup-box">
+    <form method="POST" action="/signup">
+        <div>
+          <label>Student Details:</label>
+          <input
+            type="text"
+            name="student_id"
+            placeholder="Student ID"
+            value="{{ student_id }}"
+            required
+          />
+          <input
+            type="text"
+            name="admission_no"
+            placeholder="Admission No"
+            value="{{ admission_no }}"
+            required
+          />
+          <input
+            type="text"
+            name="roll_no"
+            placeholder="Roll No"
+            value="{{ roll_no }}"
+            required
+          />
+          <input
+            type="text"
+            name="student_name"
+            placeholder="Student Name"
+            value="{{ student_name }}"
+            required
+          />
+          <input
+            type="text"
+            name="admission_number"
+            placeholder="Admission Number"
+            value="{{ admission_number }}"
+            required
+          />
+          <input
+            type="text"
+            name="university_reg_no"
+            placeholder="University Registration No"
+            value="{{ university_reg_no }}"
+            required
+          />
+          <input
+            type="text"
+            name="department"
+            placeholder="Department"
+            value="{{ department }}"
+            required
+          />
+          <input
+            type="text"
+            name="batch"
+            placeholder="Batch"
+            value="{{ batch }}"
+            required
+          />
+        </div>
+
+        <div>
+          <label>Contact Details:</label>
+          <input
+            type="text"
+            name="primary_email_id"
+            placeholder="Primary Email ID"
+            value="{{ primary_email_id }}"
+            required
+          />
+          <input
+            type="text"
+            name="student_phone"
+            placeholder="Student Phone"
+            value="{{ student_phone }}"
+            required
+          />
+          <input
+            type="text"
+            name="parent_phone"
+            placeholder="Parent Phone"
+            value="{{ parent_phone }}"
+            required
+          />
+        </div>
+
+        <div>
+          <label>Personal Details:</label>
+          <input
+            type="text"
+            name="gender"
+            placeholder="Gender"
+            value="{{ gender }}"
+            required
+          />
+          <input
+            type="text"
+            name="date_of_birth"
+            placeholder="Date of Birth"
+            value="{{ date_of_birth }}"
+            required
+          />
+          <input
+            type="text"
+            name="birth_place"
+            placeholder="Birth Place"
+            value="{{ birth_place }}"
+            required
+          />
+          <input
+            type="text"
+            name="state"
+            placeholder="State"
+            value="{{ state }}"
+            required
+          />
+          <input
+            type="text"
+            name="admission_date"
+            placeholder="Admission Date"
+            value="{{ admission_date }}"
+            required
+          />
+          <input
+            type="text"
+            name="current_address"
+            placeholder="Current Address"
+            value="{{ current_address }}"
+            required
+          />
+          <input
+            type="text"
+            name="permanent_address"
+            placeholder="Permanent Address"
+            value="{{ permanent_address }}"
+            required
+          />
+          <input
+            type="text"
+            name="religion"
+            placeholder="Religion"
+            value="{{ religion }}"
+            required
+          />
+          <input
+            type="text"
+            name="caste"
+            placeholder="Caste"
+            value="{{ caste }}"
+            required
+          />
+        </div>
+
+        <div>
+          <label>Create a new password</label>
+          <input
+            type="text"
+            name="password"
+            placeholder="Password"
+            value="{{ password }}"
+            required
+          />
+        </div>
+
+      <input type="submit" value="Signup" />
+    </form>
+  </div>
+</body>
