@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
     rel="stylesheet" />
   <style>
-    /* Custom styles for the list */
     .student-details li {
       margin-bottom: 8px;
       font-size: 16px;
@@ -23,12 +22,11 @@
     }
   </style>
 </head>
+
   <body class="bg-gray-100 h-full flex items-center justify-center">
     <div class="main p-8">
       <div class="main1 bg-white p-8 rounded-lg shadow-md">
         <div class="student-profile">
-          <h2 class="text-2xl font-bold mb-4">Customer Profile</h2>
-          <h3>User Score: {{ user_score }}</h3>
           <div class="profile-photo mt-4">
             <img
               src="{{ url_for('static', filename='pfp/' + pfp) }}"
@@ -36,6 +34,14 @@
               class="rounded-full h-60 w-60 object-cover"
             />
           </div>
+          <h3 class="text-xl font-semibold mt-4">Personal Details</h3>
+          <hr class="border-gray-300 mt-2 mb-4" />
+          {% if user_score > 50 %}
+          <p class="text-gray-600 font-bold">Score : {{ user_score }}</p>
+          {% else %}
+          <p class="text-red-600 font-bold">Score : {{ user_score }}</p>
+          {% endif %}
+
           <ul class="student-details mt-4">
             <li><span>Admission No:</span> {{ admission_number }}</li>
             <li><span>University Reg No:</span> {{ university_reg_no }}</li>

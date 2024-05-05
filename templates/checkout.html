@@ -31,7 +31,7 @@
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 20px;
-      color: #333; /* darker color for better readability */
+      color: #333; 
     }
     table {
       width: 100%;
@@ -39,15 +39,15 @@
       margin-bottom: 20px;
     }
     th, td {
-      border: 1px solid #ccc; /* subtle border */
+      border: 1px solid #ccc; 
       padding: 10px;
     }
     th {
-      background-color: #f0e5da; /* lighter background for headers */
+      background-color: #f0e5da;
       font-weight: bold;
     }
     tbody tr:nth-child(even) {
-      background-color: #f8f8f8; /* alternating row colors */
+      background-color: #f8f8f8;
     }
     .total {
       font-weight: bold;
@@ -108,9 +108,7 @@
         </tfoot>
       </table>
     <p>Receipt Number: {{ receipt_number }}</p>
-    <!-- Print button with Font Awesome icon -->
     <button class="print-button" onclick="printReceipt()"><i class="fas fa-print"></i> Print Receipt</button>
-    <!-- Checkout button (hidden for demo) -->
     <a style="text-decoration: none; color: white" href="{{ url_for('processing') }}"><button class="checkout-button">Checkout</button></a>
   </div>
   <script>

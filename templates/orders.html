@@ -24,6 +24,7 @@
             if (totalSecondsDiff <= 0) {
               cell.textContent = "timeout";
               cell.style.color = "red";
+              // 
             } else {
               const hours = Math.floor(totalSecondsDiff / 3600);
               totalSecondsDiff = totalSecondsDiff % 3600;

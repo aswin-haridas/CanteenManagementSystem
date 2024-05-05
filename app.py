@@ -20,10 +20,11 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        role = request.form["user-type"]
         conn = student_db()
         user = conn.execute(
-            "SELECT * FROM users WHERE username = ? AND password = ?",
-            (username, password),
+            "SELECT * FROM users WHERE username = ? AND password = ? AND role = ?",
+            (username, password, role),
         ).fetchone()
         conn.close()
         if user:
@@ -57,13 +58,28 @@ def signup():
         else:
             # Username is unique, proceed with user insertion
             conn.execute(
-                "INSERT INTO users VALUES (NULL,?,?,?,?)",
+                "INSERT or REPLACE INTO users VALUES (NULL,?,?,?,?)",
                 (username, password, user_type, 100)
             )
             conn.commit()
             conn.close()
             return redirect(url_for("login"))
     return render_template("signup.html")
+
+@app.route("/finepayment", methods=["GET", "POST"])
+def finepayment():
+    if request.method == "POST":
+        conn = student_db()
+        username = request.form["username"]
+        score = request.form["score"]
+        conn.execute(
+            "UPDATE users SET score = ? WHERE username = ?",
+            (score, username),
+        )
+        conn.commit()
+        conn.close()
+        return redirect(url_for("home"))
+    return render_template("fine.html")
 
 @app.route("/home", methods=["GET", "POST"])
 def home():
@@ -187,7 +203,7 @@ def profile():
         return abort(404)
     with student_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM students WHERE University_Reg_No=?", (username,))
+        cursor.execute("SELECT * FROM students JOIN users WHERE University_Reg_No=?", (username,))
         user_info = cursor.fetchone()
         if not user_info:
             return abort(404)
@@ -215,6 +231,7 @@ def profile():
         religion=user_info["Religion"],
         caste=user_info["Caste"],
         pfp=user_info["pfp"],
+        user_score=user_info["score"],
     )
 @app.route("/reducescore")
 def reducescore():
@@ -243,8 +260,6 @@ def orders():
         ).fetchall()
     return render_template("orders.html", orders=orders)
 
-
-
 @app.route("/manager")
 def manager():
     with canteen_db() as conn:
@@ -254,6 +269,7 @@ def manager():
     return render_template(
         "canteenmanager.html", menu=menu, orders=orders, reports=reports
     )
+
 @app.route("/accept_order", methods=["POST"])
 def accept_order():
     order_id = request.form.get("order_id")
@@ -261,6 +277,7 @@ def accept_order():
         conn.execute("UPDATE Cart SET status = ? WHERE id = ?", ("accepted", order_id))
         conn.commit()
     return redirect("/manager")
+
 @app.route("/served_order", methods=["POST"])
 def served_order():
     order_id = request.form["order_id"]
@@ -282,6 +299,7 @@ def served_order():
         conn.execute("UPDATE Cart SET status = ? WHERE id = ?", ("served", order_id))
         conn.commit()
     return redirect("/manager")
+
 @app.route("/edit_item", methods=["POST"])
 def edit_item():
     item_id = request.form["item_id"]
@@ -303,6 +321,7 @@ def edit_item():
     conn.commit()
     conn.close()
     return redirect("/manager")
+
 @app.route("/delete_item", methods=["POST"])
 def delete_item():
     item_id = request.form.get("item_id")
@@ -310,6 +329,7 @@ def delete_item():
         conn.execute("DELETE FROM Menu WHERE id = ?", (item_id,))
         conn.commit()
     return redirect("/manager")
+
 @app.route("/admin")
 def admin():
     conn = student_db()
@@ -332,7 +352,6 @@ def edit_user():
         conn.commit()
     return redirect("/admin")
 
-
 @app.route("/delete_user", methods=["POST"])
 def delete_user():
     user_id = request.form.get("user_id")
@@ -340,8 +359,6 @@ def delete_user():
         conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
         conn.commit()
     return redirect("/admin")
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

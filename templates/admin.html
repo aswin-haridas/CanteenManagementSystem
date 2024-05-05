@@ -104,7 +104,7 @@
           <td>{{ user[2] }}</td>
           <td>{{ user[3] }}</td>
           <td><button
-              onclick="openEditModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}')">Edit</button>
+              onclick="openEditModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}','{{ user[4] }}')">Edit</button>
           </td>
           <td><button onclick="openDeleteModal('{{ user[0] }}', '{{ user[1] }}')">Delete</button></td>
         </tr>
@@ -117,15 +117,15 @@
     <span class="close-btn" onclick="closeEditModal()">&times;</span>
     <h2>Edit User</h2>
     <form action="/edit_user" method="POST">
-      <input type="hidden" name="user_id" id="editUserId">
+      <input type="hidden" name="user_id" id="editUserId"><br>
       <label for="editUsername">Username:</label>
-      <input type="text" name="username" id="editUsername">
+      <input type="text" name="username" id="editUsername"><br>
       <label for="editPassword">Password:</label>
-      <input type="password" name="password" id="editPassword">
+      <input type="text" name="password" id="editPassword"><br>
       <label for="editRole">Role:</label>
-      <input type="text" name="role" id="editRole">
+      <input type="text" name="role" id="editRole"><br>
       <label for="editScore">Score:</label>
-      <input type="text" name="score" id="editScore">
+      <input type="text" name="score" id="editScore"><br>
       <button type="submit">Save</button>
     </form>
   </div>
@@ -142,9 +142,10 @@
   </div>
 
   <script>
-    function openEditModal(userId, username, role, score) {
+    function openEditModal(userId, username,password, role, score) {
       document.getElementById("editUserId").value = userId;
       document.getElementById("editUsername").value = username;
+      document.getElementById("editPassword").value = password;
       document.getElementById("editRole").value = role;
       document.getElementById("editScore").value = score;
       document.getElementById("editModal").style.display = "block";
