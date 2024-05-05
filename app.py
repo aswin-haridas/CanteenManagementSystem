@@ -37,24 +37,34 @@ def login():
             session["logged_in"] = True
             return redirect(url_for("home", username=username))
         else:
-            return render_template("error.html")
+            return render_template("error.html" , error = 'Invalid username or password')
     return render_template("login.html")
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
         conn = student_db()
-        conn.execute(
-            "INSERT INTO users VALUES (NULL,?,?,?)",
-            (
-                request.form["username"],
-                request.form["password"],
-                request.form["user-type"],
-            ),
-        )
-        conn.commit()
-        conn.close()
-    return redirect(url_for("login"))
+        username = request.form["username"]
+        password = request.form["password"]
+        user_type = request.form["user-type"]
+        
+        # Check if the username already exists
+        cursor = conn.execute("SELECT * FROM users WHERE username = ?", (username,))
+        existing_user = cursor.fetchone()
+        
+        if existing_user:
+            return render_template("error.html", error="Username already exists. Please choose a different username.")
+        else:
+            # Username is unique, proceed with user insertion
+            conn.execute(
+                "INSERT INTO users VALUES (NULL,?,?,?,?)",
+                (username, password, user_type, 100)
+            )
+            conn.commit()
+            conn.close()
+            return redirect(url_for("login"))
+    return render_template("signup.html")
+
 @app.route("/home", methods=["GET", "POST"])
 def home():
     conn = sqlite3.connect("canteen.db")
@@ -128,8 +138,7 @@ def remove_from_cart(name):
                     "UPDATE Cart SET quantity = ? WHERE name = ?", (new_quantity, name)
                 )
             conn.commit()
-        conn.close()
-    return redirect(url_for("home"), username=session.get("user_name"))
+    return redirect(url_for("home"))
 
 @app.route("/checkout")
 def checkout():
@@ -234,20 +243,8 @@ def orders():
         ).fetchall()
     return render_template("orders.html", orders=orders)
 
-@app.route("/edit_user", methods=["POST"])
-def edit_user():
-    user_id = request.form.get("user_id")
-    username = request.form.get("username")
-    password = request.form.get("password")
-    role = request.form.get("role")
-    score = request.form.get("score")
-    with student_db() as conn:
-        conn.execute(
-            "UPDATE users SET username = ?, password = ?, role = ? ,score = ? WHERE id = ?",
-            (username, password, role, score, user_id),
-        )
-        conn.commit()
-    return redirect("/admin")
+
+
 @app.route("/manager")
 def manager():
     with canteen_db() as conn:
@@ -319,5 +316,32 @@ def admin():
     users_cursor = conn.execute("SELECT * FROM users")
     users_data = users_cursor.fetchall()
     return render_template("admin.html", users_data=users_data)
+
+@app.route("/edit_user", methods=["POST"])
+def edit_user():
+    user_id = request.form.get("user_id")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    role = request.form.get("role")
+    score = request.form.get("score")
+    with student_db() as conn:
+        conn.execute(
+            "UPDATE users SET username = ?, password = ?, role = ? ,score = ? WHERE id = ?",
+            (username, password, role, score, user_id),
+        )
+        conn.commit()
+    return redirect("/admin")
+
+
+@app.route("/delete_user", methods=["POST"])
+def delete_user():
+    user_id = request.form.get("user_id")
+    with student_db() as conn:
+        conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        conn.commit()
+    return redirect("/admin")
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)

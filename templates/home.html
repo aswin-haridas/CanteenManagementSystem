@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
   <title>E D E R E</title>
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,7 +36,7 @@
   }
   </style>
 
-<body class="font-inter bg-white">
+<body class="font-inter bg-white fade">
   <nav class="bg-white py-4 shadow-md">
     <div class="max-w mx-auto px-5 flex justify-between items-center">
       <div></div>
@@ -66,7 +67,7 @@
             <h3 class="text-xl font-semibold mb-2">{{ item.name }}</h3>
             <p class="text-gray-600 mb-3">Category: {{ item.foodtype }}</p>
             <p class="text-gray-600 mb-3">Price: {{ item.price }}</p>
-            {% if item.availability != "available" %}
+            {% if item.availability != "Available" %}
             <p class="text-gray-400">OUT OF ORDER</p>
             {% else %}
             <form action="{{ url_for('add_to_cart', menu_id=item.id) }}" method="post">
@@ -84,7 +85,6 @@
 
     <aside class="w-4/10 p-8 bg-white shadow-md rounded-lg">
       <h1 class="text-3xl font-bold text-center mb-8">Your Cart</h1>
-
       <table class="w-full">
         <thead>
           <tr>
@@ -156,6 +156,22 @@
       });
     });
 
+    function saveScrollPosition() {
+  localStorage.setItem('scrollPosition', window.scrollY);
+}
+
+// Function to restore the scroll position
+function restoreScrollPosition() {
+  const scrollPosition = localStorage.getItem('scrollPosition');
+  if (scrollPosition) {
+    window.scrollTo(0, parseInt(scrollPosition));
+    localStorage.removeItem('scrollPosition'); // Clear after restoring
+  }
+}
+
+// Event listeners to use the functions
+window.addEventListener('scroll', saveScrollPosition);
+window.addEventListener('load', restoreScrollPosition); 
   </script>
 
 </body>

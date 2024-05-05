@@ -1,26 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-    />
-    <title>User Management</title>
-  </head>
-  <body>
-    <h1 class="text-center">User Management</h1>
 
-    <table class="table table-bordered table-striped">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .edit-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+    .delete-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    button {
+      background-color: #7ba097;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="{{ url_for('logout') }}"><button>Logout</button></a>
+  <div class="container">
+    <h2>User Management</h2>
+    <table>
       <thead>
         <tr>
           <th>User ID</th>
           <th>Username</th>
-          <th>Password</th>
           <th>Role</th>
           <th>Score</th>
-          <th>Actions</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -30,117 +103,68 @@
           <td>{{ user[1] }}</td>
           <td>{{ user[2] }}</td>
           <td>{{ user[3] }}</td>
-          <td>{{ user[4] }}</td>
-          <td>
-            <div class="d-flex justify-content-between">
-              <button
-                class="btn btn-success"
-                type="button"
-                onclick="openEditUserModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}', '{{ user[4] }}')"
-              >
-                Edit
-              </button>
-              <form action="/delete_user" method="post">
-                <input type="hidden" name="user_id" value="{{ user[0] }}" />
-                <button class="btn btn-danger" type="submit">Delete</button>
-              </form>
-            </div>
+          <td><button
+              onclick="openEditModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}')">Edit</button>
           </td>
+          <td><button onclick="openDeleteModal('{{ user[0] }}', '{{ user[1] }}')">Delete</button></td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+  </div>
 
-    <div
-      class="modal fade"
-      id="editUserModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="editUserModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="editUserForm" action="/edit_user" method="post">
-              <input type="hidden" id="editUserId" name="user_id" />
+  <div id="editModal" class="edit-modal">
+    <span class="close-btn" onclick="closeEditModal()">&times;</span>
+    <h2>Edit User</h2>
+    <form action="/edit_user" method="POST">
+      <input type="hidden" name="user_id" id="editUserId">
+      <label for="editUsername">Username:</label>
+      <input type="text" name="username" id="editUsername">
+      <label for="editPassword">Password:</label>
+      <input type="password" name="password" id="editPassword">
+      <label for="editRole">Role:</label>
+      <input type="text" name="role" id="editRole">
+      <label for="editScore">Score:</label>
+      <input type="text" name="score" id="editScore">
+      <button type="submit">Save</button>
+    </form>
+  </div>
 
-              <div class="form-group">
-                <label for="editUsername">Username</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="editUsername"
-                  name="username"
-                />
-              </div>
+  <div id="deleteModal" class="edit-modal">
+    <span class="close-btn" onclick="closeDeleteModal()">&times;</span>
+    <h2>Delete User</h2>
+    <form action="/delete_user" method="POST">
+      <input type="hidden" name="user_id" id="deleteUserId">
+      <label for="deleteUsername">Username:</label>
+      <input type="text" name="username" id="deleteUsername">
+      <button type="submit">Delete</button>
+    </form>
+  </div>
 
-              <div class="form-group">
-                <label for="editPassword">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="editPassword"
-                  name="password"
-                />
-              </div>
+  <script>
+    function openEditModal(userId, username, role, score) {
+      document.getElementById("editUserId").value = userId;
+      document.getElementById("editUsername").value = username;
+      document.getElementById("editRole").value = role;
+      document.getElementById("editScore").value = score;
+      document.getElementById("editModal").style.display = "block";
+    }
 
-              <div class="form-group">
-                <label for="editRole">Role</label>
-                <select class="form-control" id="editRole" name="role">
-                  <option value="customer">Customer</option>
-                  <option value="manager">Canteen Manager</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
+    function closeEditModal() {
+      document.getElementById("editModal").style.display = "none";
+    }
 
-              <div class="form-group">
-                <label for="editScore">Score</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="editScore"
-                  name="score"
-                />
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-            <button type="submit" form="editUserForm" class="btn btn-primary">
-              Save changes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    function openDeleteModal(userId, username) {
+      document.getElementById("deleteUserId").value = userId;
+      document.getElementById("deleteUsername").value = username;
+      document.getElementById("deleteModal").style.display = "block";
+    }
 
-    <script>
-      function openEditUserModal(userId, username, password, role, score) {
-        $("#editUserId").val(userId);
-        $("#editUsername").val(username);
-        $("#editPassword").val(password);
-        $("#editRole").val(role);
-        $("#editScore").val(score);
-        $("#editUserModal").modal("show");
-      }
-    </script>
-  </body>
+    function closeDeleteModal() {
+      document.getElementById("deleteModal").style.display = "none";
+    }
+  </script>
+
+</body>
+
 </html>
