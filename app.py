@@ -76,34 +76,12 @@ def signup():
             else:
                 conn.execute(
                     "INSERT INTO users (username, password, role, score) VALUES (?, ?, ?, ?)",
-                    (username, password, "customer", 100)
+                    (university_reg_no, password, "customer", 100)
                 )
 
                 conn.execute(
-                    "INSERT INTO students VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (
-                        username,
-                        student_id,
-                        admission_no,
-                        roll_no,
-                        student_name,
-                        admission_number,
-                        university_reg_no,
-                        department,
-                        batch,
-                        primary_email_id,
-                        student_phone,
-                        parent_phone,
-                        gender,
-                        date_of_birth,
-                        birth_place,
-                        state,
-                        admission_date,
-                        current_address,
-                        permanent_address,
-                        religion,
-                        caste
-                    )
+                    "INSERT INTO students (Sl_No, Roll_No, Admission_No, University_Reg_No, Student_ID, Student_Name, Department, Batch, Primary_Email_ID, Gender, Date_of_Birth, Birth_Place, State, Admission_Date, Current_Address, Permenant_Address, Student_Phone, Parent_Phone, Religion, Caste, pfp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (None, roll_no, admission_no, university_reg_no, student_id, student_name, department, batch, primary_email_id, gender, date_of_birth, birth_place, state, admission_date, current_address, permanent_address, student_phone, parent_phone, religion, caste, None)
                 )
                 conn.commit()
                 return redirect(url_for("login"))
