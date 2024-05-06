@@ -271,16 +271,11 @@ def orders():
     user = session["user_name"]
     with student_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT score FROM users WHERE username=?", (user,),)
+        cursor.execute("SELECT score FROM users WHERE username=?", (user,))
         score = cursor.fetchone()[0]
-        conn.commit()
-        if score == 50:
-            return render_template("fine.html", user=user)
     with canteen_db() as conn:
-        orders = conn.execute(
-            "SELECT * FROM Orders WHERE ordered_by = ?", (user,)
-        ).fetchall()
-    return render_template("orders.html", orders=orders,user=user)
+        orders = conn.execute("SELECT * FROM Orders WHERE ordered_by = ?", (user,)).fetchall()
+    return render_template("orders.html", orders=orders, user=user) if score != 50 else render_template("fine.html", user=user)
 
 @app.route("/cancel_order", methods=["POST"])
 def cancel_order():
