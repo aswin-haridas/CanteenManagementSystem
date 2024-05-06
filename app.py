@@ -312,11 +312,9 @@ def served_order():
             INSERT INTO Reports (name, price, ordered_by, quantity, customer_score, status, pickup_time, receipt_number)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (order['name'], order['price'], order['ordered_by'], order['quantity'], order['customer_score'], 'served', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), generate_receipt_number()))
-        conn.execute('UPDATE Orders SET status = ? WHERE id = ?', ('served', order_id))
+        conn.execute('DELETE FROM Orders WHERE id = ?', (order_id,))
         conn.commit()
-    
     return redirect('/manager')
-
 
 @app.route("/edit_item", methods=["POST"])
 def edit_item():
