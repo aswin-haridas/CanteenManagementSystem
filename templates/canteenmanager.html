@@ -121,6 +121,7 @@
     </table>
 
     <h1>Menu</h1>
+    <button type="button" onclick="openAddModal()">Add Item</button>
     <table>
         <tr>
             <th>Item ID</th>
@@ -213,8 +214,52 @@
             </div>
         </div>
     </div>
+   <div class="add-modal-overlay">
+       <div id="addModal" class="add-modal">
+           <div class="add-modal-content">
+               <span class="close">&times;</span>
+               <h2>Add Item</h2>
+               <form id="addForm" action="/add_item" method="post">
+                   <label for="itemName">Item Name:</label>
+                   <input type="text" id="itemName" name="item_name" style="display: block; margin-bottom: 10px;">
 
+                   <label for="itemPrice">Price:</label>
+                   <input type="text" id="itemPrice" name="item_price"
+                       style="display: block; margin-bottom: 10px;">
+
+                   <label for="itemImage">Image URL:</label>
+                   <input type="text" id="itemImage" name="item_image"
+                       style="display: block; margin-bottom: 10px;">
+
+                   <label for="itemAvailability">Availability:</label>
+                   <select id="itemAvailability" name="item_availability"
+                       style="display: block; margin-bottom: 10px">
+                       <option value="Available">Available</option>
+                       <option value="Out OF Stock">Out Of Order</option>
+                   </select>
+
+                   <label for="itemFoodType">Food Type:</label>
+                   <input type="text" id="itemFoodType" name="item_food_type"
+                       style="display: block; margin-bottom: 10px;">
+
+                   <button type="submit" style="display: block; margin: auto;">
+                       Add Item
+                   </button>
+               </form>
+           </div>
+       </div>
+   </div>
     <script>
+        function openAddModal() {
+            document.querySelector('.add-modal-overlay').style.display = 'block';
+            document.querySelector('#addModal').classList.add('active');
+        }
+
+        function closeAddModal() {
+            document.querySelector('.add-modal-overlay').style.display = 'none';
+            document.querySelector('#addModal').classList.remove('active');
+        }
+
         function openEditModal(itemId, itemName, itemPrice, itemImage, itemAvailability, itemFoodType) {
             document.getElementById('editItemId').value = itemId;
             document.getElementById('editItemName').value = itemName;
@@ -229,9 +274,13 @@
         }
 
         // Close the modal
-        document.querySelector('.close').addEventListener('click', function () {
-            document.querySelector('.modal-overlay').style.display = 'none';
-            document.querySelector('#editModal').classList.remove('active');
+        document.querySelectorAll('.close').forEach(function(closeButton) {
+            closeButton.addEventListener('click', function() {
+                document.querySelector('.modal-overlay').style.display = 'none';
+                document.querySelector('#editModal').classList.remove('active');
+                document.querySelector('.add-modal-overlay').style.display = 'none';
+                document.querySelector('#addModal').classList.remove('active');
+            });
         });
     </script>
 

@@ -409,5 +409,23 @@ def set_order_expired():
         conn.commit()
     return redirect('/orders')
 
+
+@app.route("/add_item", methods=["POST"])
+def add_item():
+    item_name = request.form.get("item_name")
+    item_price = request.form.get("item_price")
+    item_image = request.form.get("item_image")
+    item_availability = request.form.get("item_availability")
+    item_food_type = request.form.get("item_food_type")
+    with canteen_db() as conn:
+        conn.execute(
+            "INSERT INTO Menu (name, price, image_url, availability, foodtype) VALUES (?, ?, ?, ?, ?)",
+            (item_name, item_price, item_image, item_availability, item_food_type),
+        )
+        conn.commit()
+    return redirect("/manager")
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
