@@ -186,7 +186,7 @@ def remove_from_cart(name):
 def checkout():
     time.sleep(1)
     increase_purchase_count(session["user_name"])
-    timenow = datetime.now() + timedelta(seconds=20)
+    timenow = datetime.now() + timedelta(minutes=3)
     timenow = timenow.strftime("%H:%M:%S")
     print(timenow)
     with canteen_db() as conn:
