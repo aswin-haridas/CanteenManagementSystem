@@ -3,7 +3,6 @@ import time
 from flask import Flask, abort, render_template, request, redirect, session, url_for
 import sqlite3
 from helpers import generate_receipt_number as generate_receipt_number , canteen_db as canteen_db , student_db as student_db , increase_purchase_count as increase_purchase_count
-from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
@@ -299,6 +298,7 @@ def manager():
         menu = conn.execute("SELECT * FROM Menu").fetchall()
         orders = conn.execute("SELECT * FROM Orders WHERE status = 'ordered'").fetchall()
         reports = conn.execute("SELECT * FROM Reports").fetchall()
+        
     return render_template(
         "canteenmanager.html", menu=menu, orders=orders, reports=reports
     )
@@ -402,6 +402,14 @@ def reduce_score():
 @app.route("/edit_profile")
 def edit_profile():
     render_template("editprofile.html")
+    
+@app.route('/set_order_expired', methods=['POST'])
+def set_order_expired():
+    order_id = request.args.get('order_id')
+    with canteen_db() as conn:
+        conn.execute('UPDATE Orders SET status = ? WHERE id = ?', ('expired', order_id))
+        conn.commit()
+    return redirect('/orders')
 
 if __name__ == "__main__":
     app.run(debug=True)
