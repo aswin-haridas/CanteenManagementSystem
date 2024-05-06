@@ -9,6 +9,7 @@
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap&family=Satisfy&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet"
@@ -20,12 +21,18 @@
     font-family: "Inter", sans-serif;
   }
 
+  .logo {
+    font-family: "Satisfy", cursive;
+    font-size: 2.5rem;
+  }
+
   .filter-btn {
     background-color: #fff27e;
     border-radius: 4px;
     padding: 8px 16px;
     cursor: pointer;
   }
+
   .filter-btn:hover {
     background-color: #ff9035;
   }
@@ -34,14 +41,14 @@
     background-color: #ff7f07;
     border: #ff7f07 2px solid;
   }
-  </style>
+</style>
 
 <body class="font-inter bg-white fade">
   <nav class="bg-white py-4 shadow-md">
     <div class="max-w mx-auto px-5 flex justify-between items-center">
       <div></div>
-      <div class="flex-grow text-center">
-        <span class="font-satisfy text-2xl font-bold text-gray-700">Edere</span>
+      <div class="flex-grow text-center ">
+        <span class="font-satisfy text-2xl font-bold text-gray-700 logo">Edere</span>
       </div>
       <div class="flex space-x-4 ml-auto">
         <a href="{{ url_for('profile') }}" class="text-gray-800 font-semibold text-lg">Profile</a>
@@ -158,21 +165,21 @@
     });
 
     function saveScrollPosition() {
-  localStorage.setItem('scrollPosition', window.scrollY);
-}
+      localStorage.setItem('scrollPosition', window.scrollY);
+    }
 
-// Function to restore the scroll position
-function restoreScrollPosition() {
-  const scrollPosition = localStorage.getItem('scrollPosition');
-  if (scrollPosition) {
-    window.scrollTo(0, parseInt(scrollPosition));
-    localStorage.removeItem('scrollPosition'); // Clear after restoring
-  }
-}
+    // Function to restore the scroll position
+    function restoreScrollPosition() {
+      const scrollPosition = localStorage.getItem('scrollPosition');
+      if (scrollPosition) {
+        window.scrollTo(0, parseInt(scrollPosition));
+        localStorage.removeItem('scrollPosition'); // Clear after restoring
+      }
+    }
 
-// Event listeners to use the functions
-window.addEventListener('scroll', saveScrollPosition);
-window.addEventListener('load', restoreScrollPosition); 
+    // Event listeners to use the functions
+    window.addEventListener('scroll', saveScrollPosition);
+    window.addEventListener('load', restoreScrollPosition); 
   </script>
 
 </body>

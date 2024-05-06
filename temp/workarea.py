@@ -1,19 +1,16 @@
 import sqlite3
 
 # Create a new SQLite database or connect to an existing one
-conn = sqlite3.connect('student.db')
+conn = sqlite3.connect('canteen.db')
 cursor = conn.cursor()
-
-# Create Purchase table
+# Create PurchaseRecords table
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Purchase (
+    CREATE TABLE IF NOT EXISTS PurchaseRecords (
         id INTEGER PRIMARY KEY,
-        username TEXT,
-        purchase_count INTEGER
+        menu_id INTEGER
     )
 ''')
 # Commit the changes and close the connection
 conn.commit()
 conn.close()
-
-print("Purchase table created successfully!")
+print("PurchaseRecords table created successfully!")

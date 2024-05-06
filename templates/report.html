@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Report</h1>
+    {% if reports %}
+    <table>
+      <tr>
+        <th>Order ID</th>
+        <th>Item Name</th>
+        <th>Price</th>
+        <th>Customer Name</th>
+        <th>Timestamp</th>
+        <th>Quantity</th>
+        <th>Receipt Number</th>
+      </tr>
+      {% for report in reports %}
+      <tr>
+        <td>{{ report[0] }}</td>
+        <td>{{ report[1] }}</td>
+        <td>{{ report[2] }}</td>
+        <td>{{ report[3] }}</td>
+        <td>{{ report[5] }}</td>
+        <td>{{ report[4] }}</td>
+        <td>{{ report[6] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>No report data available.</p>
+    {% endif %}
+    <script>
+      function printReport() {
+        window.print();
+      }
+    </script>
+    <button onclick="printReport()">Print Report</button>
+  </body>
+</html>
