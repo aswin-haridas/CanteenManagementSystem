@@ -297,23 +297,26 @@ def cancel_order():
 def manager():
     with canteen_db() as conn:
         menu = conn.execute("SELECT * FROM Menu").fetchall()
-        orders = conn.execute("SELECT * FROM Orders").fetchall()
+        orders = conn.execute("SELECT * FROM Orders WHERE status = 'ordered'").fetchall()
         reports = conn.execute("SELECT * FROM Reports").fetchall()
     return render_template(
         "canteenmanager.html", menu=menu, orders=orders, reports=reports
     )
 
-@app.route("/served_order", methods=["POST"])
+@app.route('/served_order', methods=['POST'])
 def served_order():
-    order_id = request.form["order_id"]
+    order_id = request.form['order_id']
     with canteen_db() as conn:
-        order = conn.execute("SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone()
-        if order:
-            conn.execute("INSERT INTO Reports (order_id, item_name, item_price, ordered_by, order_time) VALUES (?, ?, ?, ?, ?)",
-                         (order_id, order["name"], order["price"], order["ordered_by"], order["pickup_time"]))
-            conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
-            conn.commit()
-    return redirect("/manager")
+        order = conn.execute('SELECT * FROM Orders WHERE id = ?', (order_id,)).fetchone()
+        conn.execute("""
+            INSERT INTO Reports (name, price, ordered_by, quantity, customer_score, status, pickup_time, receipt_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (order['name'], order['price'], order['ordered_by'], order['quantity'], order['customer_score'], 'served', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), generate_receipt_number()))
+        conn.execute('UPDATE Orders SET status = ? WHERE id = ?', ('served', order_id))
+        conn.commit()
+    
+    return redirect('/manager')
+
 
 @app.route("/edit_item", methods=["POST"])
 def edit_item():
