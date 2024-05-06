@@ -1,35 +1,109 @@
-<!-- penalty payment page  -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pay fine</title>
-</head>
-<body>
-    <h1>Penalty Payment</h1>
-    <p>Please enter your payment details below:</p>
-    <form>
-      <label for="amount">Amount:</label>
-      <input
-        type="number"
-        id="amount"
-        name="amount"
-        min="0"
-        step="0.01"
-        required
-      /><br />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pay Fine</title>
+    <!-- Use a different font for headings -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Retro+Font&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Add FontAwesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #ffffff;
+        font-family: "Retro Font", cursive;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .payment-container {
+        background-color: #fffbf1;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        text-align: center;
+      }
+      .payment-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+      }
+      form {
+        margin-top: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+      select,
+      input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      input[type="submit"] {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      input[type="submit"]:hover {
+        background-color: #0056b3;
+      }
+      .print-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .print-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="payment-container">
+      <h1 class="payment-title">Penalty Payment</h1>
+      <p>Please enter your payment details below:</p>
+      <form>
+        <label for="amount">Amount: 500</label><br />
+        <label for="payment-method">Payment Method:</label>
+        <select id="payment-method" name="payment-method" required>
+          <option value="cash">Cash</option>
+          <option value="upi">UPI</option></select
+        ><br />
 
-      <label for="payment-method">Payment Method:</label>
-      <select id="payment-method" name="payment-method" required>
-        <option value="">Select a payment method</option>
-        <option value="credit-card">Credit Card</option>
-        <option value="debit-card">Debit Card</option>
-        <option value="bank-transfer">Bank Transfer</option></select
-      ><br />
+        <input type="submit" value="Submit Payment" id="submitButton" />
+      </form>
+      <button class="print-button" onclick="printPage()">
+        <i class="fas fa-print"></i> Print Page
+      </button>
+    </div>
 
-      <input type="submit" value="Submit Payment" />
-    </form>
-  
-</body>
+    <script>
+      function printPage() {
+        document.getElementById("submitButton").style.display = "none";
+        setTimeout(function () {
+          document.getElementById("submitButton").style.display = "block";
+        }, 3000);
+        window.print();
+      }
+    </script>
+  </body>
 </html>

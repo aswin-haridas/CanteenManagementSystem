@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 import time
 from flask import Flask, abort, render_template, request, redirect, session, url_for
 import sqlite3
-from helpers import generate_receipt_number as generate_receipt_number , canteen_db as canteen_db , student_db as student_db 
+from helpers import generate_receipt_number as generate_receipt_number , canteen_db as canteen_db , student_db as student_db , increase_purchase_count as increase_purchase_count
+from apscheduler.schedulers.background import BackgroundScheduler
+
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
 
@@ -13,7 +15,7 @@ def common_icons():
     manager = "/static/assets/manager.png"
     editimage = "/static/assets/edit.png"
     return dict(admin=admin, manager=manager, customer=customer, editimage=editimage)
-
+     
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -43,12 +45,11 @@ def login():
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
-    time.sleep(2)
+    time.sleep(1)
     if request.method == "POST":
         username = request.form["university_reg_no"]
         password = request.form["password"]
         student_id = request.form.get("student_id")
-        admission_no = request.form.get("admission_no")
         roll_no = request.form.get("roll_no")
         student_name = request.form.get("student_name")
         admission_number = request.form.get("admission_number")
@@ -82,7 +83,7 @@ def signup():
 
                 conn.execute(
                     "INSERT INTO students (Sl_No, Roll_No, Admission_No, University_Reg_No, Student_ID, Student_Name, Department, Batch, Primary_Email_ID, Gender, Date_of_Birth, Birth_Place, State, Admission_Date, Current_Address, Permenant_Address, Student_Phone, Parent_Phone, Religion, Caste, pfp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (None, roll_no, admission_no, university_reg_no, student_id, student_name, department, batch, primary_email_id, gender, date_of_birth, birth_place, state, admission_date, current_address, permanent_address, student_phone, parent_phone, religion, caste, None)
+                    (None, roll_no, admission_number, university_reg_no, student_id, student_name, department, batch, primary_email_id, gender, date_of_birth, birth_place, state, admission_date, current_address, permanent_address, student_phone, parent_phone, religion, caste, None)
                 )
                 conn.commit()
                 return redirect(url_for("login"))
@@ -127,7 +128,6 @@ def home():
 def add_to_cart(menu_id):
     username = session.get("user_name")
     pickup_time = "03:00"
-
     db = student_db()
     cursor = db.cursor()
     cursor.execute("SELECT score FROM users WHERE username = ?", (username,))
@@ -182,24 +182,26 @@ def remove_from_cart(name):
 
 @app.route("/checkout")
 def checkout():
-    time.sleep(2)
-    timenow = datetime.now()+timedelta(minutes=1)
-    pickup_time = timenow.strftime("%H:%M:%S")
+    time.sleep(1)
+    increase_purchase_count(session["user_name"])
+    timenow = datetime.now() + timedelta(seconds=20)
+    timenow = timenow.strftime("%H:%M:%S")
+    print(timenow)
     with canteen_db() as conn:
         cart_items = conn.execute("SELECT * FROM Cart").fetchall()
         total = sum(item["price"] * item["quantity"] for item in cart_items)
         receipt_number = generate_receipt_number()
         for item in cart_items:
             conn.execute(
-                "INSERT INTO Orders (name, price, quantity, ordered_by, customer_score, status, pickup_time,receipt_number) VALUES (?, ?, ?, ?, ?, 'ordered', ?,?)",
+                "INSERT INTO Orders (name, price, quantity, ordered_by, customer_score, status, pickup_time, receipt_number) VALUES (?, ?, ?, ?, ?, 'ordered', ?, ?)",
                 (
                     item["name"],
                     item["price"],
                     item["quantity"],
                     item["ordered_by"],
                     item["customer_score"],
-                    pickup_time,
-                    receipt_number
+                    timenow,
+                    receipt_number,
                 ),
             )
         conn.execute("DELETE FROM Cart")
@@ -218,7 +220,7 @@ def processing():
 @app.route("/logout")
 def logout():
     session.clear()
-    time.sleep(2)
+    time.sleep(1)
     return redirect(url_for("login"))
 
 @app.route("/profile")
@@ -228,8 +230,10 @@ def profile():
         return abort(404)
     with student_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM students JOIN users WHERE University_Reg_No=?", (username,))
+        cursor.execute("SELECT * FROM students WHERE University_Reg_No=?", (username,))
         user_info = cursor.fetchone()
+        cursor.execute("SELECT score FROM users WHERE username=?", (username,))
+        score = cursor.fetchone()[0]
         if not user_info:
             return abort(404)
     return render_template(
@@ -256,25 +260,38 @@ def profile():
         religion=user_info["Religion"],
         caste=user_info["Caste"],
         pfp=user_info["pfp"],
-        user_score=user_info["score"],
+        user_score=score,
     )
 
 @app.route("/orders")
 def orders():
-    if "logged_in" not in session:
-        return redirect(url_for("login"))
     user = session["user_name"]
+    with student_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT score FROM users WHERE username=?", (user,),)
+        score = cursor.fetchone()[0]
+        conn.commit()
+        if score == 50:
+            return render_template("fine.html", user=user)
     with canteen_db() as conn:
         orders = conn.execute(
-            "SELECT * FROM Orders "
+            "SELECT * FROM Orders WHERE ordered_by = ?", (user,)
         ).fetchall()
-    return render_template("orders.html", orders=orders)
+    return render_template("orders.html", orders=orders,user=user)
 
 @app.route("/cancel_order", methods=["POST"])
 def cancel_order():
+    with student_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],),)
+        score = cursor.fetchone()[0]
+        new_score = max(score - 10, 0)
+        conn.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"],))
+        conn.commit()
     order_id = request.form["order_id"]
     with canteen_db() as conn:
         conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
+        conn.execute("")
         conn.commit()
     return redirect("/orders")
 
@@ -282,57 +299,23 @@ def cancel_order():
 def manager():
     with canteen_db() as conn:
         menu = conn.execute("SELECT * FROM Menu").fetchall()
-        orders = conn.execute("SELECT * FROM Cart").fetchall()
+        orders = conn.execute("SELECT * FROM Orders").fetchall()
         reports = conn.execute("SELECT * FROM Reports").fetchall()
     return render_template(
         "canteenmanager.html", menu=menu, orders=orders, reports=reports
     )
 
-@app.route("/accept_order", methods=["POST"])
-def accept_order():
-    order_id = request.form.get("order_id")
-    with canteen_db() as conn:
-        conn.execute("UPDATE Cart SET status = ? WHERE id = ?", ("accepted", order_id))
-        conn.commit()
-    return redirect("/manager")
-
 @app.route("/served_order", methods=["POST"])
 def served_order():
     order_id = request.form["order_id"]
     with canteen_db() as conn:
-        order = conn.execute("SELECT * FROM Cart WHERE id = ?", (order_id,)).fetchone()
-        conn.execute(
-            """
-            INSERT INTO Reports (item_name, item_price, ordered_by, item_quantity, timestamp)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            (
-                order["name"],
-                order["price"],
-                order["ordered_by"],
-                order["quantity"],
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            ),
-        )
-        conn.execute("UPDATE Cart SET status = ? WHERE id = ?", ("served", order_id))
-        conn.commit()
+        order = conn.execute("SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone()
+        if order:
+            conn.execute("INSERT INTO Reports (order_id, item_name, item_price, ordered_by, order_time) VALUES (?, ?, ?, ?, ?)",
+                         (order_id, order["name"], order["price"], order["ordered_by"], order["pickup_time"]))
+            conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
+            conn.commit()
     return redirect("/manager")
-
-@app.route("/reducescore")
-def reducescore():
-    with student_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT score FROM users WHERE username=?", (session["user_name"],)
-        )
-        user_score = cursor.fetchone()["score"]
-        new_score = max(0, user_score - 1)
-        conn.execute(
-            "UPDATE users SET score = ? WHERE username = ?",
-            (new_score, session["user_name"]),
-        )
-        conn.commit()
-    return redirect(url_for("orders"))
 
 @app.route("/edit_item", methods=["POST"])
 def edit_item():
@@ -393,6 +376,31 @@ def delete_user():
         conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
         conn.commit()
     return redirect("/admin")
+
+@app.route('/reduce_score', methods=['POST'])
+def reduce_score():
+    ordered_by = request.args.get('ordered_by')
+    with student_db() as conn:
+        user = conn.execute('SELECT * FROM users WHERE username = ?', (ordered_by,)).fetchone()
+        if user:
+            purchase_count = conn.execute('SELECT purchase_count FROM Purchase WHERE username = ?', (ordered_by,)).fetchone()[0]
+            if purchase_count == 1:
+                new_score = 90
+            elif purchase_count == 2:
+                new_score = 80
+            elif purchase_count == 3:
+                new_score = 70
+            elif purchase_count == 4:
+                new_score = 60
+            elif purchase_count == 5:
+                new_score = 50
+            conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))
+            conn.commit()  
+    return redirect(url_for('orders'))
+
+@app.route("/edit_profile")
+def edit_profile():
+    render_template("editprofile.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

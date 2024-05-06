@@ -105,10 +105,6 @@
             <td>{{ order[5] }}</td>
             <td>{{ order[4] }}</td>
             <td>
-                <form action="/accept_order" method="post">
-                    <input type="hidden" name="order_id" value="{{ order[0] }}">
-                    <button type="submit">Accept</button>
-                </form>
                 <form action="/served_order" method="post">
                     <input type="hidden" name="order_id" value="{{ order[0] }}">
                     <button type="submit">Served</button>
