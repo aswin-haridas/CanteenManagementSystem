@@ -134,7 +134,6 @@ def add_to_cart(menu_id):
     cursor = db.cursor()
     cursor.execute("SELECT score FROM users WHERE username = ?", (username,))
     score = cursor.fetchone()[0]
-    cursor.execute("INSERT INTO purchaserecords (menu_id) VALUES (?)", (menu_id,))
     db.commit()
     db.close()
     with canteen_db() as conn:
