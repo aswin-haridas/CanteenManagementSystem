@@ -1,109 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pay Fine</title>
-    <!-- Use a different font for headings -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Retro+Font&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Add FontAwesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <style>
-      body {
-        background-color: #ffffff;
-        font-family: "Retro Font", cursive;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      .payment-container {
-        background-color: #fffbf1;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        text-align: center;
-      }
-      .payment-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 20px;
-        color: #333;
-      }
-      form {
-        margin-top: 20px;
-      }
-      label {
-        display: block;
-        margin-bottom: 10px;
-      }
-      select,
-      input[type="submit"] {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
-      input[type="submit"] {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      input[type="submit"]:hover {
-        background-color: #0056b3;
-      }
-      .print-button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      .print-button:hover {
-        background-color: #0056b3;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="payment-container">
-      <h1 class="payment-title">Penalty Payment</h1>
-      <p>Please enter your payment details below:</p>
-      <form>
-        <label for="amount">Amount: 500</label><br />
-        <label for="payment-method">Payment Method:</label>
-        <select id="payment-method" name="payment-method" required>
-          <option value="cash">Cash</option>
-          <option value="upi">UPI</option></select
-        ><br />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay Fine</title>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Add FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body class="bg-white flex justify-center items-center h-screen">
+  <section class="payment-container bg-yellow-200 p-8 rounded-lg shadow-md max-w-md text-center">
+    <h1 class="payment-title text-3xl font-bold mb-6 text-gray-800">Penalty Payment</h1>
+    <p class="mb-4">Please pay your fine to proceed with your purchase:</p>
+    <form class="mb-6" id="payment-form" action="/finepaymentprocessing" method="POST">
+      <label for="amount" class="block mb-2">Amount: ₹500</label>
+      <label for="payment-method" class="block mb-2">Payment Method:</label>
+      <select id="payment-method" name="payment-method" required class="w-full p-2 mb-4 border rounded">
+        <option value="cash">Cash</option>
+        <option value="upi">UPI</option>
+      </select>
+      <input type="submit" value="Submit Payment" class="w-full bg-blue-200 text-white rounded py-2 transition duration-300 hover:bg-blue-300 cursor-pointer" />
+    </form>
+    <button onclick="printPage()" class="print-button bg-blue-200 text-white rounded py-2 px-4 transition duration-300 hover:bg-blue-300 cursor-pointer">
+      <i class="fas fa-print"></i> Print Page
+    </button>
+    <p class="mt-6 text-gray-600">If your score is too low, you cannot make purchases until the fine is paid.</p>
+  </section>
 
-        <input type="submit" value="Submit Payment" id="submitButton" />
-      </form>
-      <button class="print-button" onclick="printPage()">
-        <i class="fas fa-print"></i> Print Page
-      </button>
-    </div>
-
-    <script>
-      function printPage() {
-        document.getElementById("submitButton").style.display = "none";
-        setTimeout(function () {
-          document.getElementById("submitButton").style.display = "block";
-        }, 3000);
-        window.print();
-      }
-    </script>
-  </body>
+  <script>
+    function printPage() {
+      const submitButton = document.querySelector('input[type="submit"]');
+      submitButton.style.display = "none";
+      setTimeout(function () {
+        submitButton.style.display = "block";
+      }, 3000);
+      window.print();
+    }
+  </script>
+</body>
 </html>

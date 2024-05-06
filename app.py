@@ -92,31 +92,34 @@ def signup():
 
 @app.route("/finepayment", methods=["GET", "POST"])
 def finepayment():
-    if request.method == "POST":
-        conn = student_db()
-        username = request.form["username"]
-        score = request.form["score"]
-        conn.execute(
-            "UPDATE users SET score = ? WHERE username = ?",
-            (score, username),
-        )
-        conn.commit()
-        conn.close()
-        return redirect(url_for("home"))
     return render_template("fine.html")
+
+@app.route("/finepaymentprocessing", methods=["GET", "POST"])
+def finepaymentprocessing():
+    with student_db() as conn:
+        conn.execute("UPDATE users SET score = 100 WHERE username = ?", (session["user_name"],))
+        conn.commit()
+    return render_template("processing.html")
 
 @app.route("/home", methods=["GET", "POST"])
 def home():
-    conn = sqlite3.connect("canteen.db")
-    conn.row_factory = sqlite3.Row
-    menu_cursor = conn.execute("SELECT * FROM Menu")
+    with canteen_db() as conn:
+        conn.row_factory = sqlite3.Row
+        menu_cursor = conn.execute("SELECT * FROM Menu")
+        cart_cursor = conn.execute("SELECT * FROM Cart WHERE status = 'ordered'")
+
     menu_items = menu_cursor.fetchall()
-    cart_cursor = conn.execute("SELECT * FROM Cart WHERE status = 'ordered'")
     cart_items = cart_cursor.fetchall()
-    total_price = 0
-    for item in cart_items:
-        total_price += item["price"] * item["quantity"]
-    conn.close()
+    total_price = sum(item["price"] * item["quantity"] for item in cart_items)
+
+    with student_db() as conn:
+        conn.row_factory = sqlite3.Row
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (session["user_name"],)).fetchone()
+        score = user["score"]
+        conn.commit()
+
+    if score == 50:
+        return render_template("fine.html", user=session["user_name"])
     return render_template(
         "home.html",
         menu_items=menu_items,
@@ -213,7 +216,7 @@ def checkout():
         receipt_number=receipt_number,
     )
 
-@app.route("/processing")
+@app.route("/processing", methods=["GET", "POST"])
 def processing():
     return render_template("processing.html")
  
