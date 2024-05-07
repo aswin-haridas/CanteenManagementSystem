@@ -21,18 +21,19 @@ def student_db():
 def increase_purchase_count(username):
     with student_db() as conn:
         cursor = conn.execute(
-            "SELECT * FROM Purchase WHERE username = ?",
+            "SELECT purchasecount FROM users WHERE username = ?",
             (username,),
         )
         row = cursor.fetchone()
         if row is None:
             conn.execute(
-                "INSERT INTO Purchase (username, purchase_count) VALUES (?, 1)",
+                "INSERT INTO users (username, purchasecount) VALUES (?, 1)",
                 (username,),
             )
         else:
+            purchase_count = row["purchasecount"]
             conn.execute(
-                "UPDATE Purchase SET purchase_count = purchase_count + 1 WHERE username = ?",
-                (username,),
+                "UPDATE users SET purchasecount = ? WHERE username = ?",
+                (purchase_count + 1, username),
             )
         conn.commit()

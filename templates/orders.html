@@ -25,7 +25,8 @@
           cell.textContent = "expired";
           cell.style.color = "red";
           const orderedBy = "{{ user }}"; // Use the user variable passed from Flask
-          fetch(`/reduce_score?ordered_by=${orderedBy}`, {
+          const orderId = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
+          fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -45,7 +46,6 @@
             });
 
           // Set the order status to expired
-          const orderId = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
           fetch(`/set_order_expired?order_id=${orderId}`, {
             method: "POST",
             headers: {
@@ -64,27 +64,58 @@
                 error
               );
             });
-        
-      } else {
-        const hours = Math.floor(totalSecondsDiff / 3600);
-        totalSecondsDiff = totalSecondsDiff % 3600;
-        const mins = Math.floor(totalSecondsDiff / 60);
-        const seconds = totalSecondsDiff % 60;
-        cell.textContent =
-          hours +
-          ":" +
-          mins.toString().padStart(2, "0") +
-          ":" +
-          seconds.toString().padStart(2, "0");
-      }
+
+        } else if (totalSecondsDiff < 120) {
+          // If the time difference is less than 2 minutes
+          const cancelButton = cell.closest("tr").querySelector("#cancelForm button[type='submit']");
+          cancelButton.addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent the form submission
+
+            const orderedBy = "{{ user }}"; // Use the user variable passed from Flask
+            const orderId = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
+            fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("Network response was not ok");
+                }
+                // Handle the response if needed
+              })
+              .catch((error) => {
+                console.error(
+                  "There was a problem with the fetch operation:",
+                  error
+                );
+              });
+
+            // Submit the form after reducing the score
+            event.target.closest("form").submit();
+          });
+        } else {
+          const hours = Math.floor(totalSecondsDiff / 3600);
+          totalSecondsDiff = totalSecondsDiff % 3600;
+          const mins = Math.floor(totalSecondsDiff / 60);
+          const seconds = totalSecondsDiff % 60;
+          cell.textContent =
+            hours +
+            ":" +
+            mins.toString().padStart(2, "0") +
+            ":" +
+            seconds.toString().padStart(2, "0");
+        }
       });
 
-    // Reload the page every 1 second
-    setInterval(function () {
-      location.reload();
-    }, 1000);
+      // Reload the page every 1 second
+      setInterval(function () {
+        location.reload();
+      }, 1000);
     });
   </script>
+
 
 </head>
 

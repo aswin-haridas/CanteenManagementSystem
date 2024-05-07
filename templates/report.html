@@ -1,60 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Report</title>
-    <style>
-      table {
-        border-collapse: collapse;
-        width: 100%;
-      }
-
-      th,
-      td {
-        padding: 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-      }
-
-      tr:hover {
-        background-color: #f5f5f5;
-      }
-    </style>
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Add any additional custom styles here */
+    /* You can still override Bootstrap styles if needed */
+    /* For example: */
+    body {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
     <h1>Report</h1>
     {% if reports %}
-    <table>
-      <tr>
-        <th>Order ID</th>
-        <th>Item Name</th>
-        <th>Price</th>
-        <th>Customer Name</th>
-        <th>Timestamp</th>
-        <th>Quantity</th>
-        <th>Receipt Number</th>
-      </tr>
-      {% for report in reports %}
-      <tr>
-        <td>{{ report[0] }}</td>
-        <td>{{ report[1] }}</td>
-        <td>{{ report[2] }}</td>
-        <td>{{ report[3] }}</td>
-        <td>{{ report[5] }}</td>
-        <td>{{ report[4] }}</td>
-        <td>{{ report[6] }}</td>
-      </tr>
-      {% endfor %}
+    <table class="table table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>Order ID</th>
+          <th>Item Name</th>
+          <th>Price</th>
+          <th>Customer Name</th>
+          <th>Timestamp</th>
+          <th>Quantity</th>
+          <th>Receipt Number</th>
+          <th>Customer Score</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for report in reports %}
+        <tr>
+          <td>{{ report.id }}</td>
+          <td>{{ report.name }}</td>
+          <td>{{ report.price }}</td>
+          <td>{{ report.ordered_by }}</td>
+          <td>{{ report.pickup_time }}</td>
+          <td>{{ report.quantity }}</td>
+          <td>{{ report.receipt_number }}</td>
+          <td>{{ report.customer_score }}</td>
+          <td>{{ report.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
     {% else %}
     <p>No report data available.</p>
     {% endif %}
-    <script>
-      function printReport() {
-        window.print();
-      }
-    </script>
-    <button onclick="printReport()">Print Report</button>
-  </body>
+
+    <button class="btn btn-primary" onclick="printReport()">Print Report</button>
+  </div>
+  <script>
+    function printReport() {
+      window.print();
+    }
+  </script>
+</body>
 </html>
