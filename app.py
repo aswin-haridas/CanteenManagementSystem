@@ -179,21 +179,12 @@ def checkout():
         receipt_number = generate_receipt_number()
         for item in cart_items:
             conn.execute(
-                "UPDATE Menu SET item_count = item_count - ? WHERE name = ?",
-                (item["quantity"], item["name"]),
-            )
-            conn.execute(
-                "INSERT INTO Orders (name, price, quantity, ordered_by, customer_score, status, pickup_time, receipt_number) VALUES (?, ?, ?, ?, ?, 'ordered', ?, ?)",
-                (
-                    item["name"],
-                    item["price"],
-                    item["quantity"],
                     item["ordered_by"],
                     item["customer_score"],
                     timenow,
                     receipt_number,
                 ),
-            )
+            conn.commit()
         conn.execute("DELETE FROM Cart")
         conn.commit()
     return render_template(
@@ -386,7 +377,7 @@ def add_item():
     item_food_type = request.form.get("item_food_type")
     with canteen_db() as conn:
         conn.execute(
-            "INSERT INTO Menu (name, price, image_url, availability, foodtype,quantity) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Menu (name, price, image_url, availability, foodtype, quantity) VALUES (?, ?, ?, ?, ?, ?)",
             (item_name, item_price, f"static/{item_image}",item_quantity, item_availability, item_food_type),
         )
         conn.commit()
