@@ -285,7 +285,7 @@ def cancel_order():
             cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],))
             score = cursor.fetchone()[0]
             if time_diff.total_seconds() < 0:
-                score = score
+                new_score = score
             elif time_diff.total_seconds() < 60:
                 new_score = max(score - 10, 0)
             else:
