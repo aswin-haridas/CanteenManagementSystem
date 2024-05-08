@@ -177,7 +177,7 @@ def checkout():
     time.sleep(1)
     increase_purchase_count(session["user_name"])
     #---------------------------------------------------------
-    timenow = datetime.now() + timedelta(seconds=30)
+    timenow = datetime.now() + timedelta(minutes=3)
     #---------------------------------------------------------
     timenow = timenow.strftime("%H:%M:%S")
     print(timenow)
