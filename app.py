@@ -262,7 +262,7 @@ def orders():
         score = cursor.fetchone()[0]
     with canteen_db() as conn:
         orders = conn.execute("SELECT * FROM Orders WHERE ordered_by = ?", (user,)).fetchall()
-    return render_template("orders.html", orders=orders, user=user) if score != 50 else render_template("fine.html", user=user)
+    return render_template("orders.html", orders=orders, user=user ) if score != 50 else render_template("fine.html", user=user)
 
 @app.route("/cancel_order", methods=["POST"])
 def cancel_order():
@@ -432,6 +432,7 @@ def reduce_score():
                 redirect(url_for('finepayment'))
             conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))
             conn.commit()  
+            print(demerit,ordered_quantity,new_score)
     return redirect(url_for('orders'))
 
 
