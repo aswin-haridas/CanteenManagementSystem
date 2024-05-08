@@ -116,13 +116,10 @@ def home():
 def add_to_cart(menu_id):
     username = session.get("user_name")
     pickup_time = "03:00"
-    db = student_db()
-    cursor = db.cursor()
-    cursor.execute("SELECT score FROM users WHERE username = ?", (username,))
-    score = cursor.fetchone()[0]
-    db.commit()
-    db.close()
+    with student_db() as conn:
+        score = conn.execute("SELECT score FROM users WHERE username = ?", (username,)).fetchone()[0]
     with canteen_db() as conn:
+        
         menu_item = conn.execute(
             "SELECT name, price FROM Menu WHERE id = ?", (menu_id,)
         ).fetchone()
@@ -149,7 +146,14 @@ def add_to_cart(menu_id):
                 ),
             )
             conn.commit()
+        conn.execute(
+            "UPDATE Menu SET quantity = quantity - 1 WHERE id = ?",
+            (menu_id,),
+        )
+        conn.commit()
     return redirect(url_for("home"))
+
+
 @app.route("/remove_from_cart/<string:name>", methods=["POST"])
 def remove_from_cart(name):
     with canteen_db() as conn:
@@ -165,6 +169,7 @@ def remove_from_cart(name):
                     "UPDATE Cart SET quantity = ? WHERE name = ?", (new_quantity, name)
                 )
             conn.commit()
+        conn.execute("UPDATE Menu SET quantity = quantity + 1 WHERE name = ?", (name,))
     return redirect(url_for("home"))
 
 @app.route("/checkout")
