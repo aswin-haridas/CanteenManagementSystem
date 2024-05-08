@@ -383,7 +383,7 @@ def add_item():
     with canteen_db() as conn:
         conn.execute(
             "INSERT INTO Menu (name, price, image_url, availability, foodtype) VALUES (?, ?, ?, ?, ?)",
-            (item_name, item_price, item_image, item_availability, item_food_type),
+            (item_name, item_price, f"static/{item_image}", item_availability, item_food_type),
         )
         conn.commit()
     return redirect("/manager")
