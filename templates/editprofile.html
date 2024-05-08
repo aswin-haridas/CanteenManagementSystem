@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,8 +40,11 @@
                 <input type="text" id="primary_email_id" name="primary_email_id" value="{{ primary_email_id }}"
                     class="border border-gray-300 rounded-lg px-3 py-2 mb-4 w-full">
                 <label for="gender" class="text-gray-700">Gender:</label>
-                <input type="text" id="gender" name="gender" value="{{ gender }}"
-                    class="border border-gray-300 rounded-lg px-3 py-2 mb-4 w-full">
+                <select id="gender" name="gender" class="border border-gray-300 rounded-lg px-3 py-2 mb-4 w-full">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
                 <label for="date_of_birth" class="text-gray-700">Date of Birth:</label>
                 <input type="date" id="date_of_birth" name="date_of_birth" value="{{ date_of_birth }}"
                     class="border border-gray-300 rounded-lg px-3 py-2 mb-4 w-full">

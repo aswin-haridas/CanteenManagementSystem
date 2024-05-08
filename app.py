@@ -212,8 +212,12 @@ def checkout():
 @app.route("/processing", methods=["GET", "POST"])
 def processing():
     return render_template("processing.html")
+
 @app.route("/logout")
 def logout():
+    with sqlite3.connect('canteen.db') as conn:
+        conn.execute("DELETE FROM Cart")
+    conn.commit()
     session.clear()
     time.sleep(1)
     return redirect(url_for("login"))
@@ -281,9 +285,13 @@ def cancel_order():
                 cursor = student_conn.cursor()
                 cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],))
                 score = cursor.fetchone()[0]
-                new_score = max(score - 10, 0)
+                if order['status'] == 'expired':
+                    score = score
+                else:
+                    new_score = max(score - 10, 0)
                 student_conn.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"]))
                 student_conn.commit()
+
         conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
         conn.commit()
     return redirect("/orders")

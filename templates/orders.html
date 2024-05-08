@@ -111,7 +111,7 @@
       <tbody>
         {% for order in orders %}
         <tr class="order-row" data-pickup-time="{{ order.pickup_time }}">
-          <td class="border px-4 py-2">{{ order.id }}</td>
+          <td class="border px-4 py-2">{{ order.item_id }}</td>
           <td class="border px-4 py-2">{{ order.name }}</td>
           <td class="border px-4 py-2">{{ order.price }}</td>
           <td class="border px-4 py-2">{{ order.quantity }}</td>
