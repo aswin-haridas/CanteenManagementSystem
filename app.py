@@ -280,17 +280,18 @@ def cancel_order():
         order = conn.execute('SELECT * FROM Orders WHERE id = ?', (order_id,)).fetchone()
         pickup_time = datetime.strptime(order['pickup_time'], "%H:%M:%S")
         time_diff = pickup_time - datetime.now()
-        if time_diff.total_seconds() < 60:
-            with student_db() as student_conn:
-                cursor = student_conn.cursor()
-                cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],))
-                score = cursor.fetchone()[0]
-                if order['status'] == 'expired':
-                    score = score
-                else:
-                    new_score = max(score - 10, 0)
-                student_conn.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"]))
-                student_conn.commit()
+        with student_db() as student_conn:
+            cursor = student_conn.cursor()
+            cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],))
+            score = cursor.fetchone()[0]
+            if time_diff.total_seconds() < 0:
+                score = score
+            elif time_diff.total_seconds() < 60:
+                new_score = max(score - 10, 0)
+            else:
+                new_score = score
+            student_conn.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"]))
+            student_conn.commit()
 
         conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
         conn.commit()
