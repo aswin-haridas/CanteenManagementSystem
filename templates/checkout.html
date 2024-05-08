@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
   <title>Receipt</title>
   <!-- Use a different font for headings -->
   <link href="https://fonts.googleapis.com/css2?family=Retro+Font&display=swap" rel="stylesheet">
@@ -19,6 +20,7 @@
       height: 100vh;
       margin: 0;
     }
+
     .receipt-container {
       background-color: #fffbf1;
       padding: 20px;
@@ -27,31 +29,39 @@
       max-width: 400px;
       text-align: center;
     }
+
     .receipt-title {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 20px;
-      color: #333; 
+      color: #333;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
     }
-    th, td {
-      border: 1px solid #ccc; 
+
+    th,
+    td {
+      border: 1px solid #ccc;
       padding: 10px;
     }
+
     th {
       background-color: #f0e5da;
       font-weight: bold;
     }
+
     tbody tr:nth-child(even) {
       background-color: #f8f8f8;
     }
+
     .total {
       font-weight: bold;
     }
+
     .print-button {
       background-color: #007bff;
       color: #fff;
@@ -61,9 +71,11 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+
     .print-button:hover {
       background-color: #0056b3;
     }
+
     .checkout-button {
       background-color: #28a745;
       color: #fff;
@@ -73,55 +85,59 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+
     .checkout-button:hover {
       background-color: #218838;
     }
   </style>
 </head>
+
 <body>
   <div class="receipt-container">
     <h1 class="receipt-title">Receipt</h1>
     <table class="w-full border-collapse">
-        <thead>
-          <tr>
-            <th class="border p-2">Item Name</th>
-            <th class="border p-2">Price</th>
-            <th class="border p-2">Quantity</th>
-            <th class="border p-2">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in cart_items %}
-          <tr>
-            <td class="border p-4">{{ item['name'] }}</td>
-            <td class="border p-2">{{ item['price'] }}</td>
-            <td class="border p-2">{{ item['quantity'] }}</td>
-            <td class="border p-2">{{ item['price'] * item['quantity'] }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="3" class="border p-2 text-right">Total Price:</td>
-            <td class="border p-2">{{ total_price }}</td>
-          </tr>
-        </tfoot>
-      </table>
+      <thead>
+        <tr>
+          <th class="border p-2">Item Name</th>
+          <th class="border p-2">Price</th>
+          <th class="border p-2">Quantity</th>
+          <th class="border p-2">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <td class="border p-4">{{ item['name'] }}</td>
+          <td class="border p-2">{{ item['price'] }}</td>
+          <td class="border p-2">{{ item['quantity'] }}</td>
+          <td class="border p-2">{{ item['price'] * item['quantity'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="border p-2 text-right">Total Price:</td>
+          <td class="border p-2">{{ total_price }}</td>
+        </tr>
+      </tfoot>
+    </table>
     <p>Receipt Number: {{ receipt_number }}</p>
     <button class="print-button" onclick="printReceipt()"><i class="fas fa-print"></i> Print Receipt</button>
-    <a style="text-decoration: none; color: white" href="{{ url_for('processing') }}"><button class="checkout-button">Checkout</button></a>
+    <a style="text-decoration: none; color: white" href="{{ url_for('processing') }}"><button
+        class="checkout-button">Checkout</button></a>
   </div>
   <script>
-      function printReceipt() {
-        document.querySelector(".print-button").style.display = "none";
-        document.querySelector(".checkout-button").style.display = "none";
-        window.print();
+    function printReceipt() {
+      document.querySelector(".print-button").style.display = "none";
+      document.querySelector(".checkout-button").style.display = "none";
+      window.print();
 
-        setTimeout(function () {
-          document.querySelector(".print-button").style.display = "";
-          document.querySelector(".checkout-button").style.display = "";
-        }, 3000);
-      }
+      setTimeout(function () {
+        document.querySelector(".print-button").style.display = "";
+        document.querySelector(".checkout-button").style.display = "";
+      }, 3000);
+    }
   </script>
 </body>
+
 </html>

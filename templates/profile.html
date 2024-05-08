@@ -1,7 +1,8 @@
-<!doctype html>
-<html class=h-full>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StudentSpace</title>
   <link href=https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css rel=stylesheet>
   <link rel=stylesheet href="{{ url_for('static', filename='styles.css') }}">
@@ -97,20 +98,10 @@
           <li><span>Caste:</span> {{ caste }}</li>
         </ul>
       </div>
-      <a href="{{ url_for('edit_profile_page') }}"><button 
-        class="edit-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button></a>
+      <a href="{{ url_for('update_profile') }}"><button
+          class="edit-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button></a>
     </div>
   </div>
-
-  <script>
-    function openEditModal() {
-      document.getElementById("editModal").style.display = "block";
-    }
-
-    function closeEditModal() {
-      document.getElementById("editModal").style.display = "none";
-    }
-  </script>
 </body>
 
 </html>

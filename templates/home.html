@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E D E R E</title>
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -156,7 +154,7 @@
         }
       });
     }
-    //make the clicked button active and others inactive
+
     const filterBtns = document.querySelectorAll('.filter-btn');
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -171,16 +169,14 @@
       localStorage.setItem('scrollPosition', window.scrollY);
     }
 
-    // Function to restore the scroll position
     function restoreScrollPosition() {
       const scrollPosition = localStorage.getItem('scrollPosition');
       if (scrollPosition) {
         window.scrollTo(0, parseInt(scrollPosition));
-        localStorage.removeItem('scrollPosition'); // Clear after restoring
+        localStorage.removeItem('scrollPosition');
       }
     }
 
-    // Event listeners to use the functions
     window.addEventListener('scroll', saveScrollPosition);
     window.addEventListener('load', restoreScrollPosition); 
   </script>

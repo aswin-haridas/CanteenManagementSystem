@@ -217,6 +217,7 @@ def logout():
     session.clear()
     time.sleep(1)
     return redirect(url_for("login"))
+
 @app.route("/profile")
 def profile():
     username = session.get("user_name")
@@ -285,7 +286,6 @@ def cancel_order():
         conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
         conn.commit()
     return redirect("/orders")
-
 
 @app.route("/manager")
 def manager():
@@ -371,8 +371,6 @@ def delete_user():
         conn.commit()
     return redirect("/admin")
 
-
-    
 @app.route('/set_order_expired', methods=['POST'])
 def set_order_expired():
     order_id = request.args.get('order_id')
@@ -437,49 +435,40 @@ def reduce_score():
             print(demerit,ordered_quantity,new_score)
     return redirect(url_for('home'))
 
-@app.route('/edit_profile_page')
-def edit_profile_page():
-    user_id = session.get('user_id')
-    if user_id:
-        with student_db() as conn:
-            rows = conn.execute('SELECT * FROM students WHERE id = ?', (user_id,)).fetchall()
-            
-    return render_template('edit_profile.html', rows=rows)
-
-@app.route('/edit_profile', methods=['POST'])
-def edit_profile():
-    # Retrieve form data
-    admission_number = request.form['admission_number']
-    university_reg_no = request.form['university_reg_no']
-    student_id = request.form['student_id']
-    student_name = request.form['student_name']
-    department = request.form['department']
-    batch = request.form['batch']
-    primary_email_id = request.form['primary_email_id']
-    gender = request.form['gender']
-    date_of_birth = request.form['date_of_birth']
-    birth_place = request.form['birth_place']
-    state = request.form['state']
-    admission_date = request.form['admission_date']
-    current_address = request.form['current_address']
-    permanent_address = request.form['permanent_address']
-    student_phone = request.form['student_phone']
-    parent_phone = request.form['parent_phone']
-    religion = request.form['religion']
-    caste = request.form['caste']
-    
+@app.route("/update_profile")
+def update_profile():
+    username = session.get("user_name")
     with student_db() as conn:
-        conn.execute("""UPDATE students SET admission_number = ?,
-        university_reg_no = ?, student_id = ?, student_name = ?, department = ?, batch = ?,"
-        "primary_email_id = ?, gender = ?, date_of_birth = ?, birth_place = ?, state = ?, admission_date = ?,"
-        "current_address = ?, permanent_address = ?, student_phone = ?, parent_phone = ?, religion = ?,"
-        "caste = ? WHERE admission_number = ?""", admission_number, university_reg_no, student_id, student_name, department, batch,
-        primary_email_id, gender, date_of_birth, birth_place, state, admission_date, current_address, permanent_address,
-        student_phone, parent_phone, religion, caste)
-        conn.commit()
-    
-    return redirect(url_for('profile'))
-
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM students WHERE University_Reg_No=?", (username,))
+        user_info = cursor.fetchone()
+        if not user_info:
+            return abort(404)
+    return render_template(
+        "editprofile.html",
+        student_id=user_info["Student_ID"],
+        admission_no=user_info["Admission_No"],
+        sl_no=user_info["Sl_No"],
+        roll_no=user_info["Roll_No"],
+        student_name=user_info["student_Name"],
+        admission_number=user_info["Admission_No"],
+        university_reg_no=user_info["University_Reg_No"],
+        department=user_info["Department"],
+        batch=user_info["Batch"],
+        primary_email_id=user_info["Primary_Email_ID"],
+        gender=user_info["Gender"],
+        date_of_birth=user_info["Date_of_Birth"],
+        birth_place=user_info["Birth_Place"],
+        state=user_info["State"],
+        admission_date=user_info["Admission_Date"],
+        current_address=user_info["Current_Address"],
+        permanent_address=user_info["Permenant_Address"],
+        student_phone=user_info["Student_Phone"],
+        parent_phone=user_info["Parent_Phone"],
+        religion=user_info["Religion"],
+        caste=user_info["Caste"],
+        pfp=user_info["pfp"],
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
