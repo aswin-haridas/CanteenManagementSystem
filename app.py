@@ -166,6 +166,7 @@ def remove_from_cart(name):
                 )
             conn.commit()
     return redirect(url_for("home"))
+
 @app.route("/checkout")
 def checkout():
     time.sleep(1)
@@ -179,12 +180,17 @@ def checkout():
         receipt_number = generate_receipt_number()
         for item in cart_items:
             conn.execute(
+                "INSERT INTO Orders (name, price, ordered_by, quantity, customer_score, pickup_time, receipt_number) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    item["name"],
+                    item["price"],
                     item["ordered_by"],
+                    item["quantity"],
                     item["customer_score"],
                     timenow,
                     receipt_number,
                 ),
-            conn.commit()
+            )
         conn.execute("DELETE FROM Cart")
         conn.commit()
     return render_template(
@@ -193,6 +199,7 @@ def checkout():
         total=total,
         receipt_number=receipt_number,
     )
+    
 @app.route("/processing", methods=["GET", "POST"])
 def processing():
     return render_template("processing.html")
