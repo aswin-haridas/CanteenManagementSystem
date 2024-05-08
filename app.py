@@ -320,7 +320,7 @@ def edit_item():
         SET name=?, price=?, image_url=?, availability=?, foodtype=?, demerit=?,quantity=?
         WHERE id=?
     """,
-        (item_name, item_price, f"static/{item_image}", item_availability, item_food_type,item_demerits,item_quantity),
+        (item_name, item_price, f"static/{item_image}", item_availability, item_food_type,item_demerits,item_quantity, item_id),
     )
     conn.commit()
     conn.close()
