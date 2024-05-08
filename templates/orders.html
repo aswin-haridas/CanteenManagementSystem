@@ -7,96 +7,13 @@
 
   <title>Orders</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var pickupTimeCells = document.querySelectorAll(".pickup-time");
-      pickupTimeCells.forEach(function (cell) {
-        var pickupTimeString = cell.textContent;
-        var pickupTimeParts = pickupTimeString.split(":");
-        var pickupTime = new Date();
-        pickupTime.setHours(parseInt(pickupTimeParts[0]));
-        pickupTime.setMinutes(parseInt(pickupTimeParts[1]));
-        pickupTime.setSeconds(parseInt(pickupTimeParts[2]));
-        var currentTime = new Date();
-        var timeDiff = pickupTime.getTime() - currentTime.getTime();
-        var totalSecondsDiff = Math.floor(timeDiff / 1000);
-
-        if (totalSecondsDiff < 0) {
-          cell.textContent = "expired";
-          cell.style.color = "red";
-          const orderedBy = "{{ user }}";
-          const orderId = cell.closest("tr").querySelectorAll(".border.px-4.py-2")[0].textContent;
-          const orderQuantity = cell.closest("tr").querySelectorAll(".border.px-4.py-2")[3].textContent;
-          console.log(orderedBy, orderId, orderQuantity);
-          fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}&order_quantity=${orderQuantity}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              // Handle the response if needed
-            })
-            .catch((error) => {
-              console.error(
-                "There was a problem with the fetch operation:",
-                error
-              );
-            });
-
-          // Set the order status to expired
-          fetch(`/set_order_expired?order_id=${orderId}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              // Handle the response if needed
-            })
-            .catch((error) => {
-              console.error(
-                "There was a problem with the fetch operation:",
-                error
-              );
-            });
-        } 
-        else {
-          const hours = Math.floor(totalSecondsDiff / 3600);
-          totalSecondsDiff = totalSecondsDiff % 3600;
-          const mins = Math.floor(totalSecondsDiff / 60);
-          const seconds = totalSecondsDiff % 60;
-          cell.textContent =
-            hours +
-            ":" +
-            mins.toString().padStart(2, "0") +
-            ":" +
-            seconds.toString().padStart(2, "0");
-        }
-      });
-
-      // Reload the page every 1 second
-      setInterval(function () {
-        location.reload();
-      }, 1000);
-    });
-  </script>
-
-
 </head>
 
 <body class="bg-gray-100">
 
   <div class="container mx-auto p-8">
     <h1 class="text-2xl font-bold mb-4">Orders</h1>
-    <a href="{{ url_for('home') }}" class="text-blue-500"><button
-        class="bg-blue-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Home</button></a>
+    <a href="{{ url_for('home') }}" class="text-blue-500"><button class="bg-blue-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Home</button></a>
     <table class="min-w-full bg-white border-collapse border border-gray-300">
       <thead>
         <tr>
@@ -106,6 +23,7 @@
           <th class="bg-green-500 text-white px-4 py-2">Quantity</th>
           <th class="bg-green-500 text-white px-4 py-2">Status</th>
           <th class="bg-green-500 text-white px-4 py-2">Pickup Before</th>
+          <th class="bg-green-500 text-white px-4 py-2">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -118,9 +36,9 @@
           <td class="border px-4 py-2">{{ order.status }}</td>
           <td class="border px-4 py-2 pickup-time">{{ order.pickup_time}}</td>
           <td class="border px-4 py-2">
-            <form id="cancelForm" action="/cancel_order" method="post">
+            <form id="cancelForm_{{ order.id }}" action="/cancel_order" method="post">
               <input type="hidden" name="order_id" value="{{ order.id }}" />
-              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" type="submit">Cancel</button>
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded cancel-btn" type="submit">Cancel</button>
             </form>
           </td>
         </tr>
@@ -128,6 +46,111 @@
       </tbody>
     </table>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var pickupTimeCells = document.querySelectorAll(".pickup-time");
+
+      pickupTimeCells.forEach(function (cell) {
+        var pickupTimeString = cell.textContent;
+        var pickupTimeParts = pickupTimeString.split(":");
+        var pickupTime = new Date();
+        pickupTime.setHours(parseInt(pickupTimeParts[0]));
+        pickupTime.setMinutes(parseInt(pickupTimeParts[1]));
+        pickupTime.setSeconds(parseInt(pickupTimeParts[2]));
+
+        var currentTime = new Date();
+        var timeDiff = pickupTime.getTime() - currentTime.getTime();
+        var totalSecondsDiff = Math.floor(timeDiff / 1000);
+
+        if (totalSecondsDiff > 0) {
+          const intervalId = setInterval(function () {
+            totalSecondsDiff--;
+
+            if (totalSecondsDiff <= 0) {
+              clearInterval(intervalId);
+              cell.textContent = "expired";
+              cell.style.color = "red";
+
+              const orderedBy = "{{ user }}";
+              const orderId = cell.closest("tr").querySelectorAll(".border.px-4.py-2")[0].textContent;
+              const orderQuantity = cell.closest("tr").querySelectorAll(".border.px-4.py-2")[3].textContent;
+              console.log(orderedBy, orderId, orderQuantity);
+
+              fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}&order_quantity=${orderQuantity}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                  }
+                  // Handle the response if needed
+                })
+                .catch((error) => {
+                  console.error(
+                    "There was a problem with the fetch operation:",
+                    error
+                  );
+                });
+
+              // Set the order status to expired
+              fetch(`/set_order_expired?order_id=${orderId}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                  }
+                  // Handle the response if needed
+                })
+                .catch((error) => {
+                  console.error(
+                    "There was a problem with the fetch operation:",
+                    error
+                  );
+                });
+            } else {
+              const hours = Math.floor(totalSecondsDiff / 3600);
+              totalSecondsDiff = totalSecondsDiff % 3600;
+              const mins = Math.floor(totalSecondsDiff / 60);
+              const seconds = totalSecondsDiff % 60;
+              cell.textContent =
+                hours +
+                ":" +
+                mins.toString().padStart(2, "0") +
+                ":" +
+                seconds.toString().padStart(2, "0");
+            }
+          }, 1000);
+        } else {
+          cell.textContent = "expired";
+          cell.style.color = "red";
+        }
+      });
+
+      // Handle cancel button click
+      document.querySelectorAll('.cancel-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (event) {
+          event.preventDefault();
+          var form = event.target.closest('form');
+          if (form) {
+            var orderId = form.querySelector('input[name="order_id"]').value;
+            // Perform cancel action using orderId
+            console.log("Cancel Order ID:", orderId);
+            // Now you can submit the form or do further actions
+            form.submit(); // Example of submitting the form
+          }
+        });
+      });
+    });
+  </script>
+
 </body>
 
 </html>

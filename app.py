@@ -415,7 +415,8 @@ def download_report():
 def reduce_score():
     ordered_by = request.args.get('ordered_by')
     ordered_id = request.args.get('order_id')
-    ordered_quantity = int(request.args.get('order_quantity'))  # Convert to integer
+    ordered_quantity = int(request.args.get('order_quantity'))
+    
     #get demerit from menu using order id
     with canteen_db() as conn:
         demerit = conn.execute('SELECT demerit FROM Menu WHERE id = ?', (ordered_id,)).fetchone()
@@ -424,26 +425,18 @@ def reduce_score():
     with student_db() as conn:
         user = conn.execute('SELECT * FROM users WHERE username = ?', (ordered_by,)).fetchone()
         if user:
-            purchase_count = conn.execute('SELECT purchasecount FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
-            if purchase_count == 1:
-                new_score = 100 - (demerit * ordered_quantity)
-                print(demerit,ordered_quantity,new_score)
-            elif purchase_count == 2:
-                new_score = 90 - (demerit * ordered_quantity)
-            elif purchase_count == 3:
-                new_score = 80 - (demerit * ordered_quantity)
-            elif purchase_count == 4:
-                new_score = 70 - (demerit * ordered_quantity)
-            elif purchase_count == 5:
-                new_score = 60 - (demerit * ordered_quantity)
-            elif purchase_count == 6:
-                new_score = 50 - (demerit * ordered_quantity)
+            # purchase_count = conn.execute('SELECT purchasecount FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
+            previous_score = conn.execute('SELECT score FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
+            new_score = previous_score - (demerit * ordered_quantity)
             if new_score < 50:
                 redirect(url_for('finepayment'))
             conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))
             conn.commit()  
             print(demerit,ordered_quantity,new_score)
-    return redirect(url_for('home'))
+    return redirect(url_for('orders'))
+
+
+
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
