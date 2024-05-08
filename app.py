@@ -257,6 +257,7 @@ def profile():
         pfp=user_info["pfp"],
         user_score=score,
     )
+    
 @app.route("/orders")
 def orders():
     user = session["user_name"]
@@ -435,13 +436,58 @@ def reduce_score():
             print(demerit,ordered_quantity,new_score)
     return redirect(url_for('home'))
 
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    username = session.get("user_name")
+    if not username:
+        # Redirect to login if not logged in
+        return redirect(url_for('login'))
+
+    # Retrieve form data
+    university_reg_no = request.form.get('university_reg_no')
+    student_name = request.form.get('student_name')
+    department = request.form.get('department')
+    batch = request.form.get('batch')
+    primary_email_id = request.form.get('primary_email_id')
+    gender = request.form.get('gender')
+    date_of_birth = request.form.get('date_of_birth')
+    birth_place = request.form.get('birth_place')
+    state = request.form.get('state')
+    admission_date = request.form.get('admission_date')
+    current_address = request.form.get('current_address')
+    permanent_address = request.form.get('permanent_address')
+    student_phone = request.form.get('student_phone')
+    parent_phone = request.form.get('parent_phone')
+    religion = request.form.get('religion')
+    caste = request.form.get('caste')
+
+    # Update profile in the database
+    with student_db() as conn:
+        conn.execute("""UPDATE students 
+                        SET University_Reg_No=?, student_Name=?, Department=?, Batch=?, 
+                            Primary_Email_ID=?, Gender=?, Date_of_Birth=?, Birth_Place=?, 
+                            State=?, Admission_Date=?, Current_Address=?, Permenant_Address=?, 
+                            Student_Phone=?, Parent_Phone=?, Religion=?, Caste=?
+                        WHERE University_Reg_No=?""", 
+                        (university_reg_no, student_name, department, batch, 
+                        primary_email_id, gender, date_of_birth, birth_place, 
+                        state, admission_date, current_address, permanent_address, 
+                        student_phone, parent_phone, religion, caste, username))
+        conn.commit()
+
+    return redirect(url_for('profile'))
+
 @app.route("/update_profile")
 def update_profile():
     username = session.get("user_name")
+    if not username:
+        return abort(404)
     with student_db() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM students WHERE University_Reg_No=?", (username,))
         user_info = cursor.fetchone()
+        cursor.execute("SELECT score FROM users WHERE username=?", (username,))
+        score = cursor.fetchone()[0]
         if not user_info:
             return abort(404)
     return render_template(
@@ -468,68 +514,9 @@ def update_profile():
         religion=user_info["Religion"],
         caste=user_info["Caste"],
         pfp=user_info["pfp"],
+        user_score=score,
     )
-    
-    
-@app.route("/edit_profile", methods=["POST"])
-def edit_profile():
-    username = session.get("user_name")
-    student_id = request.form.get("student_id")
-    admission_no = request.form.get("admission_no")
-    sl_no = request.form.get("sl_no")
-    roll_no = request.form.get("roll_no")
-    student_name = request.form.get("student_name")
-    admission_number = request.form.get("admission_number")
-    university_reg_no = request.form.get("university_reg_no")
-    department = request.form.get("department")
-    batch = request.form.get("batch")
-    primary_email_id = request.form.get("primary_email_id")
-    gender = request.form.get("gender")
-    date_of_birth = request.form.get("date_of_birth")
-    birth_place = request.form.get("birth_place")
-    state = request.form.get("state")
-    admission_date = request.form.get("admission_date")
-    current_address = request.form.get("current_address")
-    permanent_address = request.form.get("permanent_address")
-    student_phone = request.form.get("student_phone")
-    parent_phone = request.form.get("parent_phone")
-    religion = request.form.get("religion")
-    caste = request.form.get("caste")
-    with student_db() as conn:
-        conn.execute(
-            "UPDATE students SET "
-            "Student_ID=?, Admission_No=?, Sl_No=?, Roll_No=?, student_Name=?, "
-            "Admission_No=?, University_Reg_No=?, Department=?, Batch=?, "
-            "Primary_Email_ID=?, Gender=?, Date_of_Birth=?, Birth_Place=?, State=?, "
-            "Admission_Date=?, Current_Address=?, Permenant_Address=?, Student_Phone=?, "
-            "Parent_Phone=?, Religion=?, Caste=? WHERE University_Reg_No=?",
-            (
-                student_id,
-                admission_no,
-                sl_no,
-                roll_no,
-                student_name,
-                admission_number,
-                university_reg_no,
-                department,
-                batch,
-                primary_email_id,
-                gender,
-                date_of_birth,
-                birth_place,
-                state,
-                admission_date,
-                current_address,
-                permanent_address,  
-                student_phone,
-                parent_phone,   
-                religion,
-                caste,
-                username,
-            ),
-        )
-        conn.commit()
-    return redirect(url_for("profile"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
