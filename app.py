@@ -277,25 +277,22 @@ def orders():
 def cancel_order():
     order_id = request.form["order_id"]
     with canteen_db() as conn:
-        order = conn.execute('SELECT * FROM Orders WHERE id = ?', (order_id,)).fetchone()
-        pickup_time = datetime.strptime(order['pickup_time'], "%H:%M:%S")
-        time_diff = pickup_time - datetime.now()
-        with student_db() as student_conn:
-            cursor = student_conn.cursor()
-            cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],))
-            score = cursor.fetchone()[0]
-            if time_diff.total_seconds() < 0:
-                new_score = score
-            elif time_diff.total_seconds() < 60:
-                new_score = max(score - 10, 0)
-            else:
-                new_score = score
-            student_conn.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"]))
-            student_conn.commit()
-
         conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
         conn.commit()
     return redirect("/orders")
+
+@app.route("/cancel_with_fine", methods=["POST"])
+def cancel_with_fine():
+    order_id = request.form["order_id"]
+    with canteen_db() as cte_conn, student_db() as stu_conn:
+        score = stu_conn.execute("SELECT score FROM users WHERE username=?", (session["user_name"],)).fetchone()[0]
+        new_score = max(score - 10, 0)
+        stu_conn.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"]))
+        stu_conn.commit()
+        cte_conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
+        cte_conn.commit()
+    return redirect("/orders")
+
 
 @app.route("/manager")
 def manager():
