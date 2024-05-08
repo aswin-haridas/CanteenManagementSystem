@@ -417,7 +417,7 @@ def reduce_score():
         if user:
             purchase_count = conn.execute('SELECT purchasecount FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
             prev_score = conn.execute('SELECT score FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
-            new_score = 77
+            new_score = prev_score - (demerit * ordered_quanity)
             if new_score < 50:
                 redirect(url_for('finepayment'))
             conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))
