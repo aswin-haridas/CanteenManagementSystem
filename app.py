@@ -176,7 +176,9 @@ def remove_from_cart(name):
 def checkout():
     time.sleep(1)
     increase_purchase_count(session["user_name"])
-    timenow = datetime.now() + timedelta(minutes=1)
+    #---------------------------------------------------------
+    timenow = datetime.now() + timedelta(seconds=30)
+    #---------------------------------------------------------
     timenow = timenow.strftime("%H:%M:%S")
     print(timenow)
     with canteen_db() as conn:
@@ -185,8 +187,9 @@ def checkout():
         receipt_number = generate_receipt_number()
         for item in cart_items:
             conn.execute(
-                "INSERT INTO Orders (name, price, ordered_by, quantity, customer_score,status, pickup_time, receipt_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO Orders (item_id ,name, price, ordered_by, quantity, customer_score,status, pickup_time, receipt_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
+                    item["id"],
                     item["name"],
                     item["price"],
                     item["ordered_by"],
@@ -416,6 +419,7 @@ def reduce_score():
             purchase_count = conn.execute('SELECT purchasecount FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
             if purchase_count == 1:
                 new_score = 100 - (demerit * ordered_quantity)
+                print(demerit,ordered_quantity,new_score)
             elif purchase_count == 2:
                 new_score = 90 - (demerit * ordered_quantity)
             elif purchase_count == 3:
@@ -431,7 +435,7 @@ def reduce_score():
             conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))
             conn.commit()  
             print(demerit,ordered_quantity,new_score)
-    return redirect(url_for('orders'))
+    return redirect(url_for('home'))
 
 @app.route('/edit_profile_page')
 def edit_profile_page():
