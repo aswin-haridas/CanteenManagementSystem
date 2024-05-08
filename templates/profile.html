@@ -1,69 +1,116 @@
-<!DOCTYPE html>
-<html class="h-full">
+<!doctype html>
+<html class=h-full>
 
 <head>
   <title>StudentSpace</title>
-  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
-    rel="stylesheet" />
+  <link href=https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css rel=stylesheet>
+  <link rel=stylesheet href="{{ url_for('static', filename='styles.css') }}">
+  <link rel=preconnect href=https://fonts.googleapis.com>
+  <link rel=preconnect href=https://fonts.gstatic.com crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap" rel=stylesheet>
   <style>
     .student-details li {
       margin-bottom: 8px;
       font-size: 16px;
       line-height: 1.5;
-      color: #4b5563;
+      color: #4b5563
     }
+
     .student-details li span {
       color: #6b7280;
-      font-weight: bold;
+      font-weight: 700
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, .5);
+      overflow: auto;
+      justify-content: center;
+      align-items: center
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 8px
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: 700
+    }
+
+    .close:focus,
+    .close:hover {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer
     }
   </style>
 </head>
-  <body class="bg-gray-100 h-full flex items-center justify-center">
-    <div class="main p-8">
-      <div class="main1 bg-white p-8 rounded-lg shadow-md">
-        <div class="student-profile">
-          <div class="profile-photo mt-4">
-            <img
-              src="{{ url_for('static', filename='pfp/' + pfp) }}"
-              alt="User Image"
-              class="rounded-full h-60 w-60 object-cover"
-            />
-          </div>
-          <h3 class="text-xl font-semibold mt-4">Personal Details</h3>
-          <hr class="border-gray-300 mt-2 mb-4" />
-          {% if user_score > 50 %}
-          <p class="text-gray-600 font-bold">Score : {{ user_score }}</p>
-          {% else %}
-          <p class="text-red-600 font-bold">Score : {{ user_score }}</p>
-          {% endif %}
-          <ul class="student-details mt-4">
-            <li><span>Admission No:</span> {{ admission_number }}</li>
-            <li><span>University Reg No:</span> {{ university_reg_no }}</li>
-            <li><span>Student ID:</span> {{ student_id }}</li>
-            <li><span>User Name:</span> {{ student_name }}</li>
-            <li><span>Department:</span> {{ department }}</li>
-            <li><span>Batch:</span> {{ batch }}</li>
-            <li><span>Primary Email ID:</span> {{ primary_email_id }}</li>
-            <li><span>Gender:</span> {{ gender }}</li>
-            <li><span>Date of Birth:</span> {{ date_of_birth }}</li>
-            <li><span>Birth Place:</span> {{ birth_place }}</li>
-            <li><span>State:</span> {{ state }}</li>
-            <li><span>Admission Date:</span> {{ admission_date }}</li>
-            <li><span>Current Address:</span> {{ current_address }}</li>
-            <li><span>Permanent Address:</span> {{ permanent_address }}</li>
-            <li><span>Student Phone:</span> {{ student_phone }}</li>
-            <li><span>Parent Phone:</span> {{ parent_phone }}</li>
-            <li><span>Religion:</span> {{ religion }}</li>
-            <li><span>Caste:</span> {{ caste }}</li>
-          </ul>
+
+<body class="bg-gray-100 h-full flex items-center justify-center">
+  <div class="main p-8">
+    <div class="main1 bg-white p-8 rounded-lg shadow-md">
+      <div class=student-profile>
+        <div class="profile-photo mt-4">
+          <img src="{{ url_for('static', filename='pfp/' + pfp) }}" alt="User Image"
+            class="rounded-full h-60 w-60 object-cover">
         </div>
-        <a href="{{ url_for('edit_profile') }}"> <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Edit Profile</button></a>
+        <h3 class="text-xl font-semibold mt-4">Personal Details</h3>
+        <hr class="border-gray-300 mt-2 mb-4">
+        {% if user_score > 50 %}
+        <p class="text-gray-600 font-bold">Score : {{ user_score }}</p>
+        {% else %}
+        <p class="text-red-600 font-bold">Score : {{ user_score }}</p>
+        {% endif %}
+        <ul class="student-details mt-4">
+          <li><span>Admission No:</span> {{ admission_number }}</li>
+          <li><span>University Reg No:</span> {{ university_reg_no }}</li>
+          <li><span>Student ID:</span> {{ student_id }}</li>
+          <li><span>User Name:</span> {{ student_name }}</li>
+          <li><span>Department:</span> {{ department }}</li>
+          <li><span>Batch:</span> {{ batch }}</li>
+          <li><span>Primary Email ID:</span> {{ primary_email_id }}</li>
+          <li><span>Gender:</span> {{ gender }}</li>
+          <li><span>Date of Birth:</span> {{ date_of_birth }}</li>
+          <li><span>Birth Place:</span> {{ birth_place }}</li>
+          <li><span>State:</span> {{ state }}</li>
+          <li><span>Admission Date:</span> {{ admission_date }}</li>
+          <li><span>Current Address:</span> {{ current_address }}</li>
+          <li><span>Permanent Address:</span> {{ permanent_address }}</li>
+          <li><span>Student Phone:</span> {{ student_phone }}</li>
+          <li><span>Parent Phone:</span> {{ parent_phone }}</li>
+          <li><span>Religion:</span> {{ religion }}</li>
+          <li><span>Caste:</span> {{ caste }}</li>
+        </ul>
       </div>
+      <a href="{{ url_for('edit_profile') }}"><button 
+        class="edit-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button></a>
     </div>
-  </body>
-  
+  </div>
+
+  <script>
+    function openEditModal() {
+      document.getElementById("editModal").style.display = "block";
+    }
+
+    function closeEditModal() {
+      document.getElementById("editModal").style.display = "none";
+    }
+  </script>
+</body>
+
 </html>

@@ -368,9 +368,7 @@ def delete_user():
         conn.commit()
     return redirect("/admin")
 
-@app.route("/edit_profile")
-def edit_profile():
-    render_template("editprofile.html")
+
     
 @app.route('/set_order_expired', methods=['POST'])
 def set_order_expired():
@@ -434,6 +432,41 @@ def reduce_score():
             conn.commit()  
             print(demerit,ordered_quantity,new_score)
     return redirect(url_for('orders'))
+
+
+@app.route('/edit_profile', methods=['POST'])
+def edit_profile():
+    # Retrieve form data
+    admission_number = request.form['admission_number']
+    university_reg_no = request.form['university_reg_no']
+    student_id = request.form['student_id']
+    student_name = request.form['student_name']
+    department = request.form['department']
+    batch = request.form['batch']
+    primary_email_id = request.form['primary_email_id']
+    gender = request.form['gender']
+    date_of_birth = request.form['date_of_birth']
+    birth_place = request.form['birth_place']
+    state = request.form['state']
+    admission_date = request.form['admission_date']
+    current_address = request.form['current_address']
+    permanent_address = request.form['permanent_address']
+    student_phone = request.form['student_phone']
+    parent_phone = request.form['parent_phone']
+    religion = request.form['religion']
+    caste = request.form['caste']
+    
+    with student_db() as conn:
+        conn.execute("""UPDATE students SET admission_number = ?,
+        university_reg_no = ?, student_id = ?, student_name = ?, department = ?, batch = ?,"
+        "primary_email_id = ?, gender = ?, date_of_birth = ?, birth_place = ?, state = ?, admission_date = ?,"
+        "current_address = ?, permanent_address = ?, student_phone = ?, parent_phone = ?, religion = ?,"
+        "caste = ? WHERE admission_number = ?""", admission_number, university_reg_no, student_id, student_name, department, batch,
+        primary_email_id, gender, date_of_birth, birth_place, state, admission_date, current_address, permanent_address,
+        student_phone, parent_phone, religion, caste)
+        conn.commit()
+    
+    return redirect(url_for('profile'))
 
 
 if __name__ == "__main__":

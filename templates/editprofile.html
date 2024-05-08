@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>editprofile</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white w-96 rounded-lg shadow-lg p-8">
+            <button class="absolute top-4 right-4 text-gray-600">
+                <span class="text-lg">&times;</span>
+            </button>
+            <h2 class="text-2xl font-bold mb-4">Edit Student Details</h2>
+            <form id="editForm" method="POST" action="{{ url_for('edit_profile') }}" class="space-y-4">
+                <input id="admission_number" name="admission_number" value="{{ admission_number }}" type="hidden" />
+                <input id="university_reg_no" name="university_reg_no" value="{{ university_reg_no }}" required
+                    type="hidden" />
+                <input id="student_id" name="student_id" value="{{ student_id }}" required type="hidden" />
+                <input id="student_name" name="student_name" value="{{ student_name }}" required type="hidden" />
+                <input id="department" name="department" value="{{ department }}" required type="hidden" />
+                <input id="batch" name="batch" value="{{ batch }}" required type="hidden" />
+                <input id="primary_email_id" name="primary_email_id" value="{{ primary_email_id }}" required
+                    type="hidden" />
+                <input id="gender" name="gender" value="{{ gender }}" required type="hidden" />
+                <input id="date_of_birth" name="date_of_birth" value="{{ date_of_birth }}" required type="hidden" />
+                <input id="birth_place" name="birth_place" value="{{ birth_place }}" required type="hidden" />
+                <input id="state" name="state" value="{{ state }}" required type="hidden" />
+                <input id="admission_date" name="admission_date" value="{{ admission_date }}" required type="hidden" />
+                <input id="current_address" name="current_address" value="{{ current_address }}" required
+                    type="hidden" />
+                <input id="permanent_address" name="permanent_address" value="{{ permanent_address }}" required
+                    type="hidden" />
+                <input id="student_phone" name="student_phone" value="{{ student_phone }}" required type="hidden" />
+                <input id="parent_phone" name="parent_phone" value="{{ parent_phone }}" required type="hidden" />
+                <input id="religion" name="religion" value="{{ religion }}" required type="hidden" />
+                <input id="caste" name="caste" value="{{ caste }}" required type="hidden" />
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
