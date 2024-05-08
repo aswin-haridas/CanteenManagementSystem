@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +26,7 @@
                     <th class="py-2 px-4">Status</th>
                     <th class="py-2 px-4">Pickup Time</th>
                     <th class="py-2 px-4">Receipt Number</th>
-                    <th class="py-2 px-4">Actions</th> 
+                    <th class="py-2 px-4">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,7 +42,7 @@
                     <td class="py-2 px-4">{{ order[7] }}</td>
                     <td class="py-2 px-4">{{ order[8] }}</td>
                     <td class="py-2 px-4">{{ order[9] }}</td>
-                    
+
                     <td class="py-2 px-4">
                         <form action="/served_order" method="post">
                             <input type="hidden" name="order_id" value="{{ order[0] }}">
@@ -65,8 +66,8 @@
                     <th class="py-2 px-4">Image URL</th>
                     <th class="py-2 px-4">Food Type</th>
                     <th class="py-2 px-4">Availability</th>
-                    <th class="py-2 px-4">Merit</th>
                     <th class="py-2 px-4">Quantity</th>
+                    <th class="py-2 px-4">Merit</th>
                     <th class="py-2 px-4">Actions</th>
                 </tr>
             </thead>
