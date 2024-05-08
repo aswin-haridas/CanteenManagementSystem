@@ -25,8 +25,9 @@
           cell.textContent = "expired";
           cell.style.color = "red";
           const orderedBy = "{{ user }}"; 
-          const orderId = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
-          const orderQuantity = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
+          const orderId = cell.closest("tr").querySelectorAll(".border.px-4.py-2")[0].textContent;
+          const orderQuantity = cell.closest("tr").querySelectorAll(".border.px-4.py-2")[3].textContent;
+
           fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}&order_quantity=${orderQuantity}`, {
             method: "POST",
             headers: {
