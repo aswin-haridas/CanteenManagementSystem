@@ -83,6 +83,7 @@ def signup():
 @app.route("/finepayment", methods=["GET", "POST"])
 def finepayment():
     return render_template("fine.html")
+
 @app.route("/finepaymentprocessing", methods=["GET", "POST"])
 def finepaymentprocessing():
     with student_db() as conn:
@@ -385,7 +386,7 @@ def add_item():
     item_food_type = request.form.get("item_food_type")
     with canteen_db() as conn:
         conn.execute(
-            "INSERT INTO Menu (name, price, image_url, availability, foodtype,item_count) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO Menu (name, price, image_url, availability, foodtype,item_count) VALUES (?, ?, ?, ?, ?, ?)",
             (item_name, item_price, f"static/{item_image}",item_quantity, item_availability, item_food_type),
         )
         conn.commit()
@@ -420,6 +421,8 @@ def reduce_score():
                 new_score = 60 - demerit
             elif purchase_count == 5:
                 new_score = 50 - demerit
+            if new_score < 50:
+                redirect(url_for('finepayment'))
             conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))
             conn.commit()  
     return redirect(url_for('orders'))
