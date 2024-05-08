@@ -16,7 +16,7 @@
         <div class="main1 bg-white p-8 shadow-md">
             <h3 class="text-xl font-semibold mt-4">Edit Profile</h3>
             <hr class="border-gray-300 mt-2 mb-4">
-            <form action="{{ url_for('update_profile') }}" method="post">
+            <form action="{{ url_for('edit_profile') }}" method="post">
                 <label for="admission_number" class="text-gray-700">Admission No:</label>
                 <input type="text" id="admission_number" name="admission_number" value="{{ admission_number }}" readonly
                     class="border border-gray-300 rounded-lg px-3 py-2 mb-4 w-full">
