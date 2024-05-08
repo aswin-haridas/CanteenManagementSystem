@@ -310,7 +310,7 @@ def edit_item():
     item_image = request.form["item_image"]
     item_availability = request.form["item_availability"]
     item_food_type = request.form["item_food_type"]
-    item_demerits = request.form["item_demerits"]
+    item_demerits = request.form["item_demerit"]
     item_quantity = request.form["item_quantity"]
     conn = sqlite3.connect("canteen.db")
     cursor = conn.cursor()

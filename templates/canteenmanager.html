@@ -69,28 +69,21 @@
                     <td class="py-2 px-4">{{ item[3] }}</td>
                     <td class="py-2 px-4">{{ item[4] }}</td>
                     <td class="py-2 px-4">{{ item[5] }}</td>
-            <td class="py-2 px-4 flex">
-              <button
-                type="button"
-                onclick="openEditModal('{{ item[0] }}', '{{ item[1] }}', '{{ item[2] }}', '{{ item[3] }}', '{{ item[4] }}', '{{ item[5] }}')"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-              >
-                Edit
-              </button>
-              <form
-                action="/delete_item"
-                method="post"
-                onsubmit="return confirm('Are you sure you want to delete this item?');"
-                class="inline-block"
-              >
-                <input type="hidden" name="item_id" value="{{ item[0] }}" />
-                <button
-                  type="submit"
-                  class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Delete
-                </button>
-              </form>
+                    <td class="py-2 px-4 flex">
+                        <button type="button"
+                            onclick="openEditModal('{{ item[0] }}', '{{ item[1] }}', '{{ item[2] }}', '{{ item[3] }}', '{{ item[4] }}', '{{ item[5] }}')"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+                            Edit
+                        </button>
+                        <form action="/delete_item" method="post"
+                            onsubmit="return confirm('Are you sure you want to delete this item?');"
+                            class="inline-block">
+                            <input type="hidden" name="item_id" value="{{ item[0] }}" />
+                            <button type="submit"
+                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                Delete
+                            </button>
+                        </form>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -149,7 +142,7 @@
                 <label for="editItemImage" class="block mb-2">Image:</label>
                 <input type="file" id="editItemImage" name="item_image"
                     class="w-full border border-gray-300 rounded-md p-2 mb-4">
-                
+
                 <label for="editImageQuantity" class="block mb-2">Quantity:</label>
                 <input type="text" id="editImageQuantity" name="item_quantity"
                     class="w-full border border-gray-300 rounded-md p-2 mb-4">
@@ -161,8 +154,8 @@
                     <option value="Out OF Stock">Out Of Stock</option>
                 </select>
                 <!-- quantity -->
-                <label for="editItemQuantity" class="block mb-2">Demerit:</label>
-                <input type="text" id="editItemQuantity" name="item_quantity"
+                <label for="editItemDemerit" class="block mb-2">Demerit:</label>
+                <input type="text" id="editItemDemerit" name="item_demerit"
                     class="w-full border border-gray-300 rounded-md p-2 mb-4">
                 <label for="editItemFoodType" class="block mb-2">Food Type:</label>
                 <select id="editItemFoodType" name="item_food_type"
@@ -219,7 +212,7 @@
             document.getElementById('editItemId').value = itemId;
             document.getElementById('editItemName').value = itemName;
             document.getElementById('editItemPrice').value = itemPrice;
-            
+
             document.getElementById('editItemAvailability').value = itemAvailability;
 
 
