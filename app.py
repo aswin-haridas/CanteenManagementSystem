@@ -266,7 +266,7 @@ def cancel_order():
         order = conn.execute('SELECT * FROM Orders WHERE id = ?', (order_id,)).fetchone()
         pickup_time = datetime.strptime(order['pickup_time'], "%H:%M:%S")
         time_diff = pickup_time - datetime.now()
-        if time_diff.total_seconds() < 60:  # If the time difference is less than 1 minute
+        if time_diff.total_seconds() < 60:
             with student_db() as student_conn:
                 cursor = student_conn.cursor()
                 cursor.execute("SELECT score FROM users WHERE username=?", (session["user_name"],))
