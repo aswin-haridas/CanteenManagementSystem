@@ -91,6 +91,7 @@
         <tr>
           <th>User ID</th>
           <th>Username</th>
+          <th>Password</th>
           <th>Role</th>
           <th>Score</th>
           <th>Action</th>
@@ -103,6 +104,8 @@
           <td>{{ user[1] }}</td>
           <td>{{ user[2] }}</td>
           <td>{{ user[3] }}</td>
+          <td>{{ user[4] }}</td>
+
           <td><button
               onclick="openEditModal('{{ user[0] }}', '{{ user[1] }}', '{{ user[2] }}', '{{ user[3] }}','{{ user[4] }}')">Edit</button>
           </td>

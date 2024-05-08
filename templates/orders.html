@@ -71,11 +71,7 @@
           const cancelButton = cell.closest("tr").querySelector("#cancelForm button[type='submit']");
           cancelButton.addEventListener("click", function (event) {
             event.preventDefault(); // Prevent the form submission
-
-            const orderedBy = "{{ user }}"; // Use the user variable passed from Flask
-            const orderId = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
-            const orderQuantity = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
-            fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}&order_quantity=${orderQuantity}`, {
+            fetch(`/cancel_order?order_id=${cell.closest("tr").querySelector(".border.px-4.py-2").textContent}`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -85,7 +81,6 @@
                 if (!response.ok) {
                   throw new Error("Network response was not ok");
                 }
-                // Handle the response if needed
               })
               .catch((error) => {
                 console.error(
@@ -93,9 +88,6 @@
                   error
                 );
               });
-
-            // Submit the form after reducing the score
-            event.target.closest("form").submit();
           });
         } else {
           const hours = Math.floor(totalSecondsDiff / 3600);
