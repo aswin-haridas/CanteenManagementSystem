@@ -126,7 +126,12 @@
       <label for="editPassword">Password:</label>
       <input type="text" name="password" id="editPassword"><br>
       <label for="editRole">Role:</label>
-      <input type="text" name="role" id="editRole"><br>
+      <select name="role" id="editRole">
+        <option value="manager">Manager</option>
+        <option value="admin">Admin</option>
+        <option value="customer">Customer</option>
+      </select>
+
       <label for="editScore">Score:</label>
       <input type="text" name="score" id="editScore"><br>
       <button type="submit">Save</button>
@@ -145,7 +150,7 @@
   </div>
 
   <script>
-    function openEditModal(userId, username,password, role, score) {
+    function openEditModal(userId, username, password, role, score) {
       document.getElementById("editUserId").value = userId;
       document.getElementById("editUsername").value = username;
       document.getElementById("editPassword").value = password;
