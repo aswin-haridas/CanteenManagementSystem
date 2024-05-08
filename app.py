@@ -406,6 +406,7 @@ def download_report():
 def reduce_score():
     ordered_by = request.args.get('ordered_by')
     ordered_id = request.args.get('order_id')
+    ordered_quanity = request.args.get('order_quantity')
     #get demerit from menu using order id
     with canteen_db() as conn:
         demerit = conn.execute('SELECT demerit FROM Menu WHERE id = ?', (ordered_id,)).fetchone()
@@ -415,16 +416,8 @@ def reduce_score():
         user = conn.execute('SELECT * FROM users WHERE username = ?', (ordered_by,)).fetchone()
         if user:
             purchase_count = conn.execute('SELECT purchasecount FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
-            if purchase_count == 1:
-                new_score = 90 - demerit
-            elif purchase_count == 2:
-                new_score = 80 - demerit
-            elif purchase_count == 3:
-                new_score = 70 - demerit
-            elif purchase_count == 4:
-                new_score = 60 - demerit
-            elif purchase_count == 5:
-                new_score = 50 - demerit
+            prev_score = conn.execute('SELECT score FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
+            new_score = (prev_score - (demerit*ordered_quanity)) - (purchase_count*10)
             if new_score < 50:
                 redirect(url_for('finepayment'))
             conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))

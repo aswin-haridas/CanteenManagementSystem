@@ -73,7 +73,8 @@
 
             const orderedBy = "{{ user }}"; // Use the user variable passed from Flask
             const orderId = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
-            fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}`, {
+            const orderQuantity = cell.closest("tr").querySelector(".border.px-4.py-2").textContent;
+            fetch(`/reduce_score?ordered_by=${orderedBy}&order_id=${orderId}&order_quantity=${orderQuantity}`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
