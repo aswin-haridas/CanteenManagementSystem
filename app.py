@@ -104,7 +104,7 @@ def home():
         user = conn.execute("SELECT * FROM users WHERE username = ?", (session["user_name"],)).fetchone()
         score = user["score"]
         conn.commit()
-    if score == 50:
+    if score <= 50:
         return render_template("fine.html", user=session["user_name"])
     return render_template(
         "home.html",
