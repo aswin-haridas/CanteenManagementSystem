@@ -309,15 +309,17 @@ def edit_item():
     item_image = request.form["item_image"]
     item_availability = request.form["item_availability"]
     item_food_type = request.form["item_food_type"]
+    item_demerits = request.form["item_demerits"]
+    item_quantity = request.form["item_quantity"]
     conn = sqlite3.connect("canteen.db")
     cursor = conn.cursor()
     cursor.execute(
         """
         UPDATE menu 
-        SET name=?, price=?, image_url=?, availability=?, foodtype=?
+        SET name=?, price=?, image_url=?, availability=?, foodtype=?, demerits=?,quantity=?
         WHERE id=?
     """,
-        (item_name, item_price, f"static/{item_image}", item_availability, item_food_type, item_id),
+        (item_name, item_price, f"static/{item_image}", item_availability, item_food_type, item_id,item_demerits,item_quantity),
     )
     conn.commit()
     conn.close()
@@ -378,12 +380,13 @@ def add_item():
     item_name = request.form.get("item_name")
     item_price = request.form.get("item_price")
     item_image = request.form.get("item_image")
+    item_quantity = request.form.get("item_quantity")
     item_availability = request.form.get("item_availability")
     item_food_type = request.form.get("item_food_type")
     with canteen_db() as conn:
         conn.execute(
-            "INSERT INTO Menu (name, price, image_url, availability, foodtype) VALUES (?, ?, ?, ?, ?)",
-            (item_name, item_price, f"static/{item_image}", item_availability, item_food_type),
+            "INSERT INTO Menu (name, price, image_url, availability, foodtype,item_count) VALUES (?, ?, ?, ?, ?)",
+            (item_name, item_price, f"static/{item_image}",item_quantity, item_availability, item_food_type),
         )
         conn.commit()
     return redirect("/manager")
