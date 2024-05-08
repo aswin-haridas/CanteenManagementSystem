@@ -386,7 +386,7 @@ def add_item():
     item_food_type = request.form.get("item_food_type")
     with canteen_db() as conn:
         conn.execute(
-            "INSERT INTO Menu (name, price, image_url, availability, foodtype,item_count) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Menu (name, price, image_url, availability, foodtype,quantity) VALUES (?, ?, ?, ?, ?, ?)",
             (item_name, item_price, f"static/{item_image}",item_quantity, item_availability, item_food_type),
         )
         conn.commit()
