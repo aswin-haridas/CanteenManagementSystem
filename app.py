@@ -293,7 +293,6 @@ def cancel_with_fine():
         cte_conn.commit()
     return redirect("/orders")
 
-
 @app.route("/manager")
 def manager():
     with canteen_db() as conn:

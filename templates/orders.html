@@ -139,21 +139,6 @@
           cell.style.color = "red";
         }
       });
-
-      // Handle cancel button click
-      document.querySelectorAll('.cancel-btn').forEach(function (btn) {
-        btn.addEventListener('click', function (event) {
-          event.preventDefault();
-          var form = event.target.closest('form');
-          if (form) {
-            var orderId = form.querySelector('input[name="order_id"]').value;
-            // Perform cancel action using orderId
-            console.log("Cancel Order ID:", orderId);
-            // Now you can submit the form or do further actions
-            form.submit(); // Example of submitting the form
-          }
-        });
-      });
     });
   </script>
 
