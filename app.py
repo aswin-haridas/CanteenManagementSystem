@@ -414,9 +414,9 @@ def reduce_score():
             demerit = demerit[0]
     with student_db() as conn:
         user = conn.execute('SELECT * FROM users WHERE username = ?', (ordered_by,)).fetchone()
+        prev_score = conn.execute('SELECT score FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
         if user:
             purchase_count = conn.execute('SELECT purchasecount FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
-            prev_score = conn.execute('SELECT score FROM users WHERE username = ?', (ordered_by,)).fetchone()[0]
             new_score = prev_score - (demerit * ordered_quanity)
             if new_score < 50:
                 redirect(url_for('finepayment'))
