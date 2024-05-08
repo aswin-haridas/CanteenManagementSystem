@@ -433,14 +433,14 @@ def reduce_score():
             print(demerit,ordered_quantity,new_score)
     return redirect(url_for('orders'))
 
-# @app.route('/edit_profile_page')
-# def edit_profile_page():
-#     # Get the current user's ID
-#     user_id = session.get('user_id')
-
-#     # Retrieve the current user's information from the database
-#     if user_id:
-#         rows = db.execute("SELECT * FROM users WHERE id=
+@app.route('/edit_profile_page')
+def edit_profile_page():
+    user_id = session.get('user_id')
+    if user_id:
+        with student_db() as conn:
+            rows = conn.execute('SELECT * FROM students WHERE id = ?', (user_id,)).fetchall()
+            
+    return render_template('edit_profile.html', rows=rows)
 
 @app.route('/edit_profile', methods=['POST'])
 def edit_profile():
