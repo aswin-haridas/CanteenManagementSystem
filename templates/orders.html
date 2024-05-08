@@ -65,30 +65,6 @@
                 error
               );
             });
-
-        } else if (totalSecondsDiff < 120) {
-          // If the time difference is less than 2 minutes
-          const cancelButton = cell.closest("tr").querySelector("#cancelForm button[type='submit']");
-          cancelButton.addEventListener("click", function (event) {
-            event.preventDefault(); // Prevent the form submission
-            fetch(`/cancel_order?order_id=${cell.closest("tr").querySelector(".border.px-4.py-2").textContent}`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error("Network response was not ok");
-                }
-              })
-              .catch((error) => {
-                console.error(
-                  "There was a problem with the fetch operation:",
-                  error
-                );
-              });
-          });
         } else {
           const hours = Math.floor(totalSecondsDiff / 3600);
           totalSecondsDiff = totalSecondsDiff % 3600;
