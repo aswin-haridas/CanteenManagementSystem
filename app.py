@@ -180,13 +180,14 @@ def checkout():
         receipt_number = generate_receipt_number()
         for item in cart_items:
             conn.execute(
-                "INSERT INTO Orders (name, price, ordered_by, quantity, customer_score, pickup_time, receipt_number) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO Orders (name, price, ordered_by, quantity, customer_score,status, pickup_time, receipt_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     item["name"],
                     item["price"],
                     item["ordered_by"],
                     item["quantity"],
                     item["customer_score"],
+                    'ordered',
                     timenow,
                     receipt_number,
                 ),
