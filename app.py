@@ -301,7 +301,7 @@ def cancel_with_fine():
 def manager():
     with canteen_db() as conn:
         menu = conn.execute("SELECT * FROM Menu").fetchall()
-        orders = conn.execute("SELECT * FROM Orders WHERE status = 'ordered'").fetchall()
+        orders = conn.execute("SELECT * FROM Orders'").fetchall()
         reports = conn.execute("SELECT * FROM Reports").fetchall()
     return render_template(
         "canteenmanager.html", menu=menu, orders=orders, reports=reports
