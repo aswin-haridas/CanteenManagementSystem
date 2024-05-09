@@ -30,7 +30,7 @@
             </thead>
             <tbody>
                 {% for order in orders %}
-                {% if order[7] != 'expired' %}
+                {% if order[7] == 'ordered' %}
                 <tr>
                     <td class="py-2 px-4">{{ order[0] }}</td>
                     <td class="py-2 px-4">{{ order[1] }}</td>
@@ -39,7 +39,7 @@
                     <td class="py-2 px-4">{{ order[4] }}</td>
                     <td class="py-2 px-4">{{ order[5] }}</td>
                     <td class="py-2 px-4">{{ order[6] }}</td>
-                    <td class="py-2 px-4">{{ order[8] }}</td>
+                    <td class="py-2 px-4">{{ order[7] }}</td>
                     <td class="py-2 px-4">{{ order[9] }}</td>
                     <td class="py-2 px-4">
                         <form action="/served_order" method="post">
@@ -220,6 +220,10 @@
     </div>
 
     <script>
+        //refresh the order table periodically
+
+
+
         function openEditModal(itemId, itemName, itemPrice, itemAvailability) {
             document.getElementById('editItemId').value = itemId;
             document.getElementById('editItemName').value = itemName;

@@ -111,7 +111,6 @@
                   );
                 });
 
-              // Set the order status to expired
               fetch(`/set_order_expired?order_id=${orderId}`, {
                 method: "POST",
                 headers: {
