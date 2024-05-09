@@ -424,7 +424,7 @@ def reduce_score():
         demerit = conn.execute('SELECT demerit FROM Menu WHERE id = ?', (ordered_id,)).fetchone()
         if demerit:
             demerit = int(demerit[0])
-        conn.execute('UPDATE Orders SET status = "expired" WHERE id = ?', (ordered_id,))
+        conn.execute('UPDATE Orders SET status = "expired" WHERE item_id = ?', (ordered_id,))
         conn.commit()   
     with student_db() as conn:
         user = conn.execute('SELECT * FROM users WHERE username = ?', (ordered_by,)).fetchone()
