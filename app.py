@@ -284,13 +284,17 @@ def cancel_order():
 @app.route("/cancel_with_fine", methods=["POST"])
 def cancel_with_fine():
     order_id = request.form["order_id"]
-    with canteen_db() as cte_conn, student_db() as stu_conn:
-        score = stu_conn.execute("SELECT score FROM users WHERE username=?", (session["user_name"],)).fetchone()[0]
-        new_score = max(score - 10, 0)
-        stu_conn.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"]))
-        stu_conn.commit()
-        cte_conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
-        cte_conn.commit()
+    with canteen_db() as canteen_db_conn, student_db() as student_db_conn:
+        with student_db_conn:
+            user_score = student_db_conn.execute(
+                "SELECT score FROM users WHERE username=?", (session["user_name"],)
+            ).fetchone()[0]
+            new_score = max(user_score - 10, 0)
+            student_db_conn.execute(
+                "UPDATE users SET score = ? WHERE username = ?", (new_score, session["user_name"])
+            )
+        with canteen_db_conn:
+            canteen_db_conn.execute("DELETE FROM Orders WHERE id = ?", (order_id,))
     return redirect("/orders")
 
 @app.route("/manager")

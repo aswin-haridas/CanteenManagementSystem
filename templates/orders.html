@@ -51,6 +51,8 @@
     document.addEventListener("DOMContentLoaded", function () {
       var pickupTimeCells = document.querySelectorAll(".pickup-time");
 
+      console.log("Running interval script");
+
       pickupTimeCells.forEach(function (cell) {
         var pickupTimeString = cell.textContent;
         var pickupTimeParts = pickupTimeString.split(":");
@@ -63,13 +65,22 @@
         var timeDiff = pickupTime.getTime() - currentTime.getTime();
         var totalSecondsDiff = Math.floor(timeDiff / 1000);
 
-        if (totalSecondsDiff <= 60 && totalSecondsDiff > 0) {
-            const form = cell.closest("tr").querySelector(".cancel-btn").closest("form");
-            form.action = "/cancel_with_fine";}
+        console.log(
+          "Processing order with id:",
+          cell.closest("tr").querySelectorAll(".border.px-4.py-2")[0].textContent
+        );
+        console.log("Time diff:", totalSecondsDiff);
 
         if (totalSecondsDiff > 0) {
           const intervalId = setInterval(function () {
             totalSecondsDiff--;
+            console.log("Time left:", totalSecondsDiff);
+
+            if (totalSecondsDiff <= 60) {
+              console.log("Less than 60 seconds left");
+              const form = cell.closest("tr").querySelector(".cancel-btn").closest("form");
+              form.action = "/cancel_with_fine";
+            }
 
             if (totalSecondsDiff <= 0) {
               clearInterval(intervalId);
