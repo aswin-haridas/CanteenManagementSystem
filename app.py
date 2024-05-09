@@ -478,7 +478,6 @@ def edit_profile():
                         state, admission_date, current_address, permanent_address, 
                         student_phone, parent_phone, religion, caste, username))
         conn.commit()
-
     return redirect(url_for('profile'))
 
 @app.route("/update_profile")
@@ -520,7 +519,6 @@ def update_profile():
         pfp=user_info["pfp"],
         user_score=score,
     )
-
 
 if __name__ == "__main__":
     app.run(debug=True)
