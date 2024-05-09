@@ -90,6 +90,7 @@ def finepaymentprocessing():
         conn.execute("UPDATE users SET score = 100 WHERE username = ?", (session["user_name"],))
         conn.commit()
     return render_template("processing.html")
+
 @app.route("/home", methods=["GET", "POST"])
 def home():
     with canteen_db() as conn:
@@ -104,8 +105,8 @@ def home():
         user = conn.execute("SELECT * FROM users WHERE username = ?", (session["user_name"],)).fetchone()
         score = user["score"]
         conn.commit()
-    if score <= 50:
-        return render_template("fine.html", user=session["user_name"])
+        if score <= 50:
+            return render_template("fine.html", user=session["user_name"])
     return render_template(
         "home.html",
         menu_items=menu_items,
