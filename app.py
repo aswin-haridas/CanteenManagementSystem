@@ -301,7 +301,7 @@ def cancel_with_fine():
 def manager():
     with canteen_db() as conn:
         menu = conn.execute("SELECT * FROM Menu").fetchall()
-        orders = conn.execute("SELECT * FROM Orders").fetchall()
+        orders = conn.execute("SELECT * FROM Orders WHERE status = 'ordered'").fetchall()
         reports = conn.execute("SELECT * FROM Reports").fetchall()
     return render_template(
         "canteenmanager.html", menu=menu, orders=orders, reports=reports
@@ -318,6 +318,14 @@ def served_order():
         conn.execute('DELETE FROM Orders WHERE id = ?', (order_id,))
         conn.commit()
     return redirect('/manager')
+
+@app.route('/set_order_expired', methods=['POST'])
+def set_order_expired():
+    order_id = request.args.get('order_id')
+    with canteen_db() as conn:
+        conn.execute('UPDATE Orders SET status = "expired" WHERE id = ?', (order_id))
+        conn.commit()
+    return redirect('/orders')
 
 @app.route("/edit_item", methods=["POST"])
 def edit_item():
@@ -381,13 +389,7 @@ def delete_user():
         conn.commit()
     return redirect("/admin")
 
-@app.route('/set_order_expired', methods=['POST'])
-def set_order_expired():
-    order_id = request.args.get('order_id')
-    with canteen_db() as conn:
-        conn.execute('UPDATE Orders SET status = ? WHERE id = ?', ('expired', order_id))
-        conn.commit()
-    return redirect('/orders')
+
 
 @app.route("/add_item", methods=["POST"])
 def add_item():
@@ -422,6 +424,8 @@ def reduce_score():
         demerit = conn.execute('SELECT demerit FROM Menu WHERE id = ?', (ordered_id,)).fetchone()
         if demerit:
             demerit = int(demerit[0])
+        conn.execute('UPDATE Orders SET status = "expired" WHERE id = ?', (ordered_id,))
+        conn.commit()   
     with student_db() as conn:
         user = conn.execute('SELECT * FROM users WHERE username = ?', (ordered_by,)).fetchone()
         if user:
@@ -433,9 +437,6 @@ def reduce_score():
             conn.execute('UPDATE users SET score = ? WHERE username = ?', (new_score, ordered_by))
             conn.commit()  
             print(demerit,ordered_quantity,new_score)
-    with canteen_db() as conn:
-        conn.execute('DELETE FROM Orders WHERE id = ?', (ordered_id,))
-        conn.commit()
     return redirect(url_for('orders'))
 
 
